@@ -28,10 +28,12 @@ class UserOptions extends Migration
                             ->references('id')
                             ->on('options_app')
                             ->onUpdate('cascade')
-                            ->onDelete('restrict');     
+                            ->onDelete('restrict');
             $table->primary(['user_id', 'option_id']);
             $table->timestamps();
         });
+
+
     }
 
     /**
@@ -42,5 +44,6 @@ class UserOptions extends Migration
     public function down()
     {
         //
+        Schema::dropIfExists('user_optios');
     }
 }
