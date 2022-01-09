@@ -3,57 +3,80 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserOption;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
-use Validator;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
 
     //
-    public function regiter(Request $request)
+    public function register(Request $request)
     {
+        $array_final   = array();
+
         $rules = [
-            'first_name'     =>       'required|string|max:50',
-            'last_name'      =>       'required|string|max:50',
-            'email'          =>       'required|string|max:150|unique:users,email',
-            'password'       =>       'required|string|confirmed'
+            'txt_fname_user'     =>       'required|string|max:50',
+            'txt_lname_user'     =>       'required|string|max:50',
+            'txt_email_user'     =>       'required|string|max:150|unique:users,email|confirmed'
         ];
         $inputs      =   $request->all();
 
+        $hid_id_option  =    $inputs['hid_options_usr'];
+        $collect_hid    =    Str::of($hid_id_option)->explode(',');
+        DB::beginTransaction();
         try
         {
             $obj_validacion     = Validator::make($inputs,$rules);
             if(!$obj_validacion->fails())
             {
+                $temp_password = Str::random(8);
+                $temp_password_hash = Hash::make($temp_password);
+
                 $user       =   User::create([
-                    'first_name'    => $inputs['first_name'],
-                    'last_name'     => $inputs['last_name'],
-                    'email'         => $inputs['email'],
-                    'password'      => bcrypt($inputs['password'])
+                    'first_name'    => $inputs['txt_fname_user'],
+                    'last_name'     => $inputs['txt_lname_user'],
+                    'email'         => $inputs['txt_email_user'],
+                    'password'      => $temp_password_hash
                 ]);
-                $token = $user->createToken(env('APP_KEY'))->plainTextToken;
 
                 if($user->id > 0)
                 {
-                    return \response()->json(['res'=>true,'message'=>config('constants.msg_new_srv'),'token'=>$token],200);
+                    foreach($collect_hid as $valor)
+                    {
+                        UserOption::create([
+                            'user_id' => $user->id,
+                            'option_id' => $valor
+                        ]);
+                    }
+                    //enviar correo electronico
+
+                    DB::commit();
+                    return \response()->json(['res'=>true,'message'=>config('constants.msg_new_srv'),'pass'=>$temp_password],200);
                 }
                 else
                 {
+                    DB::rollback();
                     return \response()->json(['res'=>false,'message'=>config('constants.msg_error_operacion_srv')],200);
                 }
             }
             else
             {
+                DB::rollback();
                 return \response()->json(['res'=>false,'message'=>$obj_validacion->errors()],200);
             }
         }
         catch(\Exception $e)
         {
-            return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+            DB::rollback();
+            return \response()->json(['res'=>false,'message'=>$e],200);
         }
     }
+
 
     public function logout(Request $request)
     {

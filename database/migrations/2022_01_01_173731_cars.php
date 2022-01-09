@@ -17,8 +17,7 @@ class Cars extends Migration
         //
         Schema::create('cars', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('make_id');
-            $table->unsignedBigInteger('model_id');
+
             $table->unsignedBigInteger('trim_id');
             $table->unsignedBigInteger('style_id');
             $table->unsignedBigInteger('branch_id');
@@ -31,6 +30,7 @@ class Cars extends Migration
             $table->integer('transmission');
             $table->integer('condition_car');
             $table->integer('fuel_type');
+            $table->string('body_style',45)->nullable();
             $table->string('fuel_economy',45)->nullable();
             $table->string('engine',45)->nullable();
             $table->string('drivetrain',45)->nullable();
@@ -38,8 +38,6 @@ class Cars extends Migration
             $table->string('url_info',150)->nullable();
 
             //llaves foraneas
-            $table->foreign('make_id')->references('id')->on('makes')->onUpdate('cascade')->onDelete('restrict');
-            $table->foreign('model_id')->references('id')->on('models')->onUpdate('cascade')->onDelete('restrict');
             $table->foreign('trim_id')->references('id')->on('trims')->onUpdate('cascade')->onDelete('restrict');
             $table->foreign('style_id')->references('id')->on('styles')->onUpdate('cascade')->onDelete('restrict');
 

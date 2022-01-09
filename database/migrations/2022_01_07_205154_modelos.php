@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class Trims extends Migration
+class Modelos extends Migration
 {
     /**
      * Run the migrations.
@@ -14,18 +14,18 @@ class Trims extends Migration
     public function up()
     {
         //
-        Schema::create('trims', function (Blueprint $table) {
+        Schema::create('modelos',function (Blueprint $table)
+        {
             $table->id();
-            $table->unsignedBigInteger('modelo_id');
+            $table->unsignedBigInteger('make_id');
             $table->string('name',45);
             $table->timestamps();
 
-            //llaves foraneas
-
-
+             //llaves foraneas
+             $table->foreign('make_id')->references('id')->on('makes')->onUpdate('cascade')->onDelete('restrict');
         });
 
-        if(Schema::hasTable('modelos'))
+        if(Schema::hasTable('trims'))
         {
             Schema::table('trims', function (Blueprint $table) {
                 $table->foreign('modelo_id')->references('id')->on('modelos')->onUpdate('cascade')->onDelete('restrict');
@@ -41,6 +41,6 @@ class Trims extends Migration
     public function down()
     {
         //
-        Schema::dropIfExists('trims');
+        Schema::dropIfExists('modelos');
     }
 }

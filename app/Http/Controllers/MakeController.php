@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
+use \App\Models\Make;
 use Illuminate\Support\Facades\Validator;
 
-class UserController extends Controller
+class MakeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,22 +15,22 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
-        try
-        {
-            if(count(User::all()) > 0)
-            {
-                return \response()->json(['res'=>true,'data'=>User::all()],200);
-            }
-            else
-            {
-                return \response()->json(['res'=>false,'message'=>config('constants.msg_empty')],200);
-            }
-        }
-        catch(\Exception $e)
-        {
-            return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
-        }
+         //
+         try
+         {
+             if(count(Make::all()) > 0)
+             {
+                 return \response()->json(['res'=>true,'data'=>Make::all()],200);
+             }
+             else
+             {
+                 return \response()->json(['res'=>false,'message'=>config('constants.msg_empty')],200);
+             }
+         }
+         catch(\Exception $e)
+         {
+             return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+         }
 
     }
 
@@ -42,21 +42,24 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $inputs_f       = array();
+        //
         $rules = [
-            'first_name'     =>       'required|string|max:50',
-            'last_name'      =>       'required|string|max:50',
-            'email'          =>       'required|max:150|unique:users,email',
-            'password'       =>       'required|string|confirmed'
+            'txt_name_mk'     =>       'required|string|max:45',
+            'txt_url_mk'      =>       'required|url|max:150'
         ];
 
         try
         {
-            $obj_validacion     = Validator::make($request->all(),$rules);
+            $inputs              =   $request->all();
+            $inputs['txt_url_mk']=   'https://'.$inputs['txt_url_mk'];
+            $obj_validacion     = Validator::make($inputs,$rules);
 
             if(!$obj_validacion->fails())
             {
-                $input              =   $request->all();
-                $auto       =   User::create($input);
+                $inputs_f['name']       =   $inputs['txt_name_mk'];
+                $inputs_f['website']    =   $inputs['txt_url_mk'];
+                $auto       =   Make::create($inputs_f);
 
                 if($auto->id > 0)
                 {
@@ -86,12 +89,13 @@ class UserController extends Controller
      */
     public function show($id)
     {
+        //
         try
         {
-            if(User::where('id',$id)->count())
+            if(Make::where('id',$id)->count())
             {
-                $user = User::get()->find($id);
-                return \response()->json(['res'=>true,'datos'=>$user],200);
+                $make = Make::get()->find($id);
+                return \response()->json(['res'=>true,'datos'=>$make],200);
             }
             else
             {
@@ -113,24 +117,28 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
+        //
+        $inputs_f       = array();
         $rules = [
-            'first_name'     =>       'required|string|max:50',
-            'last_name'      =>       'required|string|max:50',
-            'email'          =>       'required|max:150|unique:users,email,'.$id
+            'txt_name_mk'     =>       'required|string|max:45',
+            'txt_url_mk'      =>       'required|url|max:150'
         ];
 
-        $input              =   $request->all();
+        $inputs              =   $request->all();
         try
         {
-            $obj_validacion     = Validator::make($input,$rules);
+            $inputs['txt_url_mk']=   'https://'.$inputs['txt_url_mk'];
+            $obj_validacion     = Validator::make($inputs,$rules);
 
             if(!$obj_validacion->fails())
             {
-                $user   =   User::find($id);
-                if($user->id == $id)
+                $make   =   Make::find($id);
+                if($make->id == $id)
                 {
-                    $auto_user       =   $user->update($input);
-                    if($auto_user)
+                    $inputs_f['name']       =   $inputs['txt_name_mk'];
+                    $inputs_f['website']    =   $inputs['txt_url_mk'];
+                    $upd_make               =   $make->update($inputs_f);
+                    if($upd_make)
                     {
                         return \response()->json(['res'=>true,'message'=>config('constants.msg_ok_srv')],200);
                     }
@@ -163,13 +171,14 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
+        //
         try
         {
-            $count_user     =   User::where('id',$id)->count();
+            $count_make     =   Make::where('id',$id)->count();
 
-            if($count_user > 0)
+            if($count_make > 0)
             {
-                User::destroy($id);
+                Make::destroy($id);
                 return \response()->json(['res'=>true,'message'=>config('constants.msg_ok_srv')],200);
             }
             else

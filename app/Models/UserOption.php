@@ -5,11 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OptionApp extends Model
+class UserOption extends Model
 {
     use HasFactory;
-
-    protected $table = 'options_app';
+    protected $table = 'user_optios';
 
     /**
      * The attributes that are mass assignable.
@@ -17,10 +16,8 @@ class OptionApp extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'descripcion',
-        'path_option',
-        'group_option'
+        'user_id',
+        'option_id'
     ];
 
     /**

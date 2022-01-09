@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
+use \App\Models\Modelo;
 use Illuminate\Support\Facades\Validator;
 
-class UserController extends Controller
+class ModeloController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,9 +18,10 @@ class UserController extends Controller
         //
         try
         {
-            if(count(User::all()) > 0)
+            if(count(Modelo::all()) > 0)
             {
-                return \response()->json(['res'=>true,'data'=>User::all()],200);
+                $modelos  = Modelo::with(['make:id,name,website'])->get();
+                return \response()->json(['res'=>true,'data'=>$modelos],200);
             }
             else
             {
@@ -31,7 +32,6 @@ class UserController extends Controller
         {
             return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
         }
-
     }
 
     /**
@@ -42,23 +42,25 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        //
         $rules = [
-            'first_name'     =>       'required|string|max:50',
-            'last_name'      =>       'required|string|max:50',
-            'email'          =>       'required|max:150|unique:users,email',
-            'password'       =>       'required|string|confirmed'
+            'slc_brand_md'    =>       'required|exists:App\Models\Make,id',
+            'txt_name_md'     =>       'required|string|max:45'
         ];
 
         try
         {
-            $obj_validacion     = Validator::make($request->all(),$rules);
+            $inputs              =   $request->all();
+
+            $obj_validacion     = Validator::make($inputs,$rules);
 
             if(!$obj_validacion->fails())
             {
-                $input              =   $request->all();
-                $auto       =   User::create($input);
+                $inputs_f['make_id']       =   $inputs['slc_brand_md'];
+                $inputs_f['name']          =   $inputs['txt_name_md'];
+                $modelo       =   Modelo::create($inputs_f);
 
-                if($auto->id > 0)
+                if($modelo->id > 0)
                 {
                     return \response()->json(['res'=>true,'message'=>config('constants.msg_new_srv')],200);
                 }
@@ -86,12 +88,41 @@ class UserController extends Controller
      */
     public function show($id)
     {
+
         try
         {
-            if(User::where('id',$id)->count())
+            if(Modelo::where('id',$id)->count())
             {
-                $user = User::get()->find($id);
-                return \response()->json(['res'=>true,'datos'=>$user],200);
+                $modelo = Modelo::with(['make'])->find($id);
+                return \response()->json(['res'=>true,'datos'=>$modelo],200);
+            }
+            else
+            {
+                return \response()->json(['res'=>true,'message'=>config('constants.msg_no_existe_srv')],200);
+            }
+        }
+        catch(\Exception $e)
+        {
+            return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+        }
+    }
+
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function getModeloByMake($id)
+    {
+        //
+        try
+        {
+            if(Modelo::where('make_id',$id)->count())
+            {
+                $modelo = Modelo::where('make_id',$id)->get();
+                return \response()->json(['res'=>true,'datos'=>$modelo],200);
             }
             else
             {
@@ -113,24 +144,24 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
+        //
         $rules = [
-            'first_name'     =>       'required|string|max:50',
-            'last_name'      =>       'required|string|max:50',
-            'email'          =>       'required|max:150|unique:users,email,'.$id
+            'slc_brand_md'    =>       'required|exists:App\Models\Make,id',
+            'txt_name_md'     =>       'required|string|max:45'
         ];
 
-        $input              =   $request->all();
+        $inputs              =   $request->all();
         try
         {
-            $obj_validacion     = Validator::make($input,$rules);
+            $obj_validacion     = Validator::make($inputs,$rules);
 
             if(!$obj_validacion->fails())
             {
-                $user   =   User::find($id);
-                if($user->id == $id)
+                $modelo   =   Modelo::find($id);
+                if($modelo->id == $id)
                 {
-                    $auto_user       =   $user->update($input);
-                    if($auto_user)
+                    $upd_modelo               =   $modelo->update($inputs);
+                    if($upd_modelo)
                     {
                         return \response()->json(['res'=>true,'message'=>config('constants.msg_ok_srv')],200);
                     }
@@ -163,13 +194,14 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
+        //
         try
         {
-            $count_user     =   User::where('id',$id)->count();
+            $count_modelo     =   Modelo::where('id',$id)->count();
 
-            if($count_user > 0)
+            if($count_modelo > 0)
             {
-                User::destroy($id);
+                Modelo::destroy($id);
                 return \response()->json(['res'=>true,'message'=>config('constants.msg_ok_srv')],200);
             }
             else

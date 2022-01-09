@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
+use App\Models\Trim;
 use Illuminate\Support\Facades\Validator;
 
-class UserController extends Controller
+class TrimController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,9 +18,10 @@ class UserController extends Controller
         //
         try
         {
-            if(count(User::all()) > 0)
+            if(count(Trim::all()) > 0)
             {
-                return \response()->json(['res'=>true,'data'=>User::all()],200);
+                $trims  = Trim::with(['modelo:id,name'])->get();
+                return \response()->json(['res'=>true,'data'=>$trims],200);
             }
             else
             {
@@ -31,7 +32,6 @@ class UserController extends Controller
         {
             return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
         }
-
     }
 
     /**
@@ -42,23 +42,25 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        //
         $rules = [
-            'first_name'     =>       'required|string|max:50',
-            'last_name'      =>       'required|string|max:50',
-            'email'          =>       'required|max:150|unique:users,email',
-            'password'       =>       'required|string|confirmed'
+            'slc_model_trim'    =>       'required|exists:App\Models\Modelo,id',
+            'txt_name_trim'     =>       'required|string|max:45'
         ];
 
         try
         {
-            $obj_validacion     = Validator::make($request->all(),$rules);
+            $inputs              =   $request->all();
+
+            $obj_validacion     = Validator::make($inputs,$rules);
 
             if(!$obj_validacion->fails())
             {
-                $input              =   $request->all();
-                $auto       =   User::create($input);
+                $inputs_f['modelo_id']       =   $inputs['slc_model_trim'];
+                $inputs_f['name']          =   trim($inputs['txt_name_trim']);
+                $trim       =   Trim::create($inputs_f);
 
-                if($auto->id > 0)
+                if($trim->id > 0)
                 {
                     return \response()->json(['res'=>true,'message'=>config('constants.msg_new_srv')],200);
                 }
@@ -86,12 +88,41 @@ class UserController extends Controller
      */
     public function show($id)
     {
+        //
         try
         {
-            if(User::where('id',$id)->count())
+            if(Trim::where('id',$id)->count())
             {
-                $user = User::get()->find($id);
-                return \response()->json(['res'=>true,'datos'=>$user],200);
+                $trim = Trim::with(['modelo'])->find($id);
+                return \response()->json(['res'=>true,'datos'=>$trim],200);
+            }
+            else
+            {
+                return \response()->json(['res'=>true,'message'=>config('constants.msg_no_existe_srv')],200);
+            }
+        }
+        catch(\Exception $e)
+        {
+            return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+        }
+    }
+
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function getTrimByModelo($id)
+    {
+        //
+        try
+        {
+            if(Trim::where('modelo_id',$id)->count())
+            {
+                $trim = Trim::where('modelo_id',$id)->get();
+                return \response()->json(['res'=>true,'datos'=>$trim],200);
             }
             else
             {
@@ -114,23 +145,22 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $rules = [
-            'first_name'     =>       'required|string|max:50',
-            'last_name'      =>       'required|string|max:50',
-            'email'          =>       'required|max:150|unique:users,email,'.$id
+            'slc_model_trim'    =>       'required|exists:App\Models\Modelo,id',
+            'txt_name_trim'     =>       'required|string|max:45'
         ];
 
-        $input              =   $request->all();
+        $inputs              =   $request->all();
         try
         {
-            $obj_validacion     = Validator::make($input,$rules);
+            $obj_validacion     = Validator::make($inputs,$rules);
 
             if(!$obj_validacion->fails())
             {
-                $user   =   User::find($id);
-                if($user->id == $id)
+                $trim   =   Trim::find($id);
+                if($trim->id == $id)
                 {
-                    $auto_user       =   $user->update($input);
-                    if($auto_user)
+                    $upd_trim               =   $trim->update($inputs);
+                    if($upd_trim)
                     {
                         return \response()->json(['res'=>true,'message'=>config('constants.msg_ok_srv')],200);
                     }
@@ -163,13 +193,14 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
+        //
         try
         {
-            $count_user     =   User::where('id',$id)->count();
+            $count_trim     =   Trim::where('id',$id)->count();
 
-            if($count_user > 0)
+            if($count_trim > 0)
             {
-                User::destroy($id);
+                Trim::destroy($id);
                 return \response()->json(['res'=>true,'message'=>config('constants.msg_ok_srv')],200);
             }
             else
