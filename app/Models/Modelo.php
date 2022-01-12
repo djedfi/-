@@ -38,6 +38,6 @@ class Modelo extends Model
 
     public function trim()
     {
-        return $this->belongsTo(Trim::class);
+        return $this->hasMany(Trim::class);
     }
 }

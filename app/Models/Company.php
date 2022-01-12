@@ -5,19 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Trim extends Model
+class Company extends Model
 {
     use HasFactory;
 
-    protected $table = 'trims';
+    protected $table = 'companies';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'modelo_id',
         'name'
     ];
 
@@ -31,13 +25,8 @@ class Trim extends Model
         'updated_at'
     ];
 
-    public function modelo()
+    public function branch()
     {
-        return $this->belongsTo(Modelo::class);
-    }
-
-    public function car()
-    {
-        return  $this->hasMany(Car::class);
+        return $this->hasMany(Branch::class);
     }
 }

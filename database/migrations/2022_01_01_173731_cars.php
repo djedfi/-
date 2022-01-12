@@ -22,15 +22,15 @@ class Cars extends Migration
             $table->unsignedBigInteger('style_id');
             $table->unsignedBigInteger('branch_id');
             $table->string('vin',17)->unique();
-            $table->string('stock_number',10)->unique();
+            $table->string('stock_number',8)->unique();
             $table->year('year');
             $table->decimal('precio',10,2);
             $table->integer('doors');
+            $table->char('color',7);
             $table->integer('mileage');
             $table->integer('transmission');
             $table->integer('condition_car');
             $table->integer('fuel_type');
-            $table->string('body_style',45)->nullable();
             $table->string('fuel_economy',45)->nullable();
             $table->string('engine',45)->nullable();
             $table->string('drivetrain',45)->nullable();

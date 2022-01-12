@@ -22,6 +22,7 @@ class Branches extends Migration
             $table->string('address_s',150)->nullable();
             $table->char('telephone',10);
             $table->char('cellphone',10);
+            $table->string('city',45);
             $table->foreign('company_id')->references('id')->on('companies')->onUpdate('cascade')->onDelete('restrict');
             $table->timestamps();
         });

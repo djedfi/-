@@ -6,6 +6,10 @@ use App\Http\Controllers\MakeController;
 use App\Http\Controllers\ModeloController;
 use App\Http\Controllers\TrimController;
 use App\Http\Controllers\OptionAppController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\BranchController;
+use App\Http\Controllers\StyleController;
+use App\Http\Controllers\CarController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,7 +32,7 @@ Route::group(['middleware'=>['auth:sanctum']],function()
     Route::post("logout",[App\Http\Controllers\AuthController::class,'logout']);
     Route::get("usersget",[App\Http\Controllers\UserController::class,'index']);
 
-    Route::post("register",[App\Http\Controllers\AuthController::class,'register']);
+
 
     Route::resource("optiosapp",OptionAppController::class);
 
@@ -40,6 +44,15 @@ Route::group(['middleware'=>['auth:sanctum']],function()
     Route::resource("trims", TrimController::class);
     Route::get("trimsbmodel/{model}",[App\Http\Controllers\TrimController::class,'getTrimByModelo']);
 
+    Route::resource("companies", CompanyController::class);
+
+    Route::resource("branches", BranchController::class);
+
+    Route::resource("styles", StyleController::class);
+
+    Route::resource("cars", CarController::class);
+    Route::post("checkvincar/{id}",[App\Http\Controllers\CarController::class,'ChechVIN']);
+    Route::post("checksnumbercar/{id}",[App\Http\Controllers\CarController::class,'ChechSckNumber']);
 
 });
 
@@ -47,5 +60,6 @@ Route::group(['middleware'=>['auth:sanctum']],function()
 //Public Routes
 
 Route::post("login",[App\Http\Controllers\AuthController::class,'login']);
+Route::post("register",[App\Http\Controllers\AuthController::class,'register']);
 
 
