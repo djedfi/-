@@ -25,12 +25,7 @@ class Modelos extends Migration
              $table->foreign('make_id')->references('id')->on('makes')->onUpdate('cascade')->onDelete('restrict');
         });
 
-        if(Schema::hasTable('trims'))
-        {
-            Schema::table('trims', function (Blueprint $table) {
-                $table->foreign('modelo_id')->references('id')->on('modelos')->onUpdate('cascade')->onDelete('restrict');
-            });
-        }
+
     }
 
     /**

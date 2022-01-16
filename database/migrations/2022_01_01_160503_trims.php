@@ -21,16 +21,11 @@ class Trims extends Migration
             $table->timestamps();
 
             //llaves foraneas
-
+            $table->foreign('modelo_id')->references('id')->on('modelos')->onUpdate('cascade')->onDelete('restrict');
 
         });
 
-        if(Schema::hasTable('modelos'))
-        {
-            Schema::table('trims', function (Blueprint $table) {
-                $table->foreign('modelo_id')->references('id')->on('modelos')->onUpdate('cascade')->onDelete('restrict');
-            });
-        }
+
     }
 
     /**

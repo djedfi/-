@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OptionApp extends Model
+class PasswordReset extends Model
 {
     use HasFactory;
 
-    protected $table = 'options_app';
+    protected $table = 'password_resets';
 
     /**
      * The attributes that are mass assignable.
@@ -17,11 +17,11 @@ class OptionApp extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'descripcion',
-        'path_option',
-        'group_option',
-        'icono'
+        'user_id',
+        'token_signature',
+        'token_type',
+        'used_token',
+        'expires_at',
     ];
 
     /**
@@ -36,6 +36,8 @@ class OptionApp extends Model
 
     public function user()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsTo(User::class);
     }
+
+
 }

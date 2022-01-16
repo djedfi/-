@@ -57,7 +57,7 @@ class Car extends Model
         return $this->belongsTo(Style::class);
     }
 
-    public function brach()
+    public function branch()
     {
         return $this->belongsTo(Branch::class);
     }

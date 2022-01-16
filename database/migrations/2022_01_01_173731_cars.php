@@ -40,6 +40,7 @@ class Cars extends Migration
             //llaves foraneas
             $table->foreign('trim_id')->references('id')->on('trims')->onUpdate('cascade')->onDelete('restrict');
             $table->foreign('style_id')->references('id')->on('styles')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreign('branch_id')->references('id')->on('branches')->onUpdate('cascade')->onDelete('restrict');
 
             $table->timestamps();
         });
@@ -47,8 +48,8 @@ class Cars extends Migration
         DB::statement('ALTER TABLE cars ADD CONSTRAINT chk_transmission CHECK (transmission between 1 and 3);');
         //1=Used; 2= New
         DB::statement('ALTER TABLE cars ADD CONSTRAINT chk_condition_car CHECK (condition_car = 1 or condition_car = 2);');
-        //1=Gasoline;2=Diesel
-        DB::statement('ALTER TABLE cars ADD CONSTRAINT chk_fuel_type CHECK (fuel_type = 1 or fuel_type = 2);');
+        //1=Gasoline;2=Diesel;3= Hybrid;4=Electric
+        DB::statement('ALTER TABLE cars ADD CONSTRAINT chk_fuel_type CHECK (fuel_type = 1 or fuel_type = 2 or fuel_type = 3 or fuel_type = 4);');
 
 
     }

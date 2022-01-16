@@ -17,8 +17,9 @@ class Customers extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('state_id');
-            $table->char('customer_id',7)->unique();
+            $table->char('customer_id',9)->unique();
             $table->string('licence',15)->unique();
+            $table->string('state_licence',45);
             $table->string('first_name',250);
             $table->string('last_name',250);
             $table->string('initial',4)->nullable();
@@ -26,12 +27,12 @@ class Customers extends Migration
             $table->string('address_s',150)->nullable();
             $table->string('city',100);
             $table->string('zip',10);
-            $table->char('telephone_res',10)->nullable();
-            $table->char('telephone_bus',10)->nullable();
+            $table->string('telephone_res',20)->nullable();
+            $table->string('telephone_bus',20)->nullable();
             $table->char('cellphone',10);
-            $table->string('email',150)->nullable();
+            $table->string('email',150)->unique();
             $table->date('birthday');
-            $table->string('ssn',150);
+            $table->string('ssn',150)->unique();
             $table->foreign('state_id')->references('id')->on('states')->onUpdate('cascade')->onDelete('restrict');
 
             $table->timestamps();

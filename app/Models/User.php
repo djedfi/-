@@ -21,6 +21,7 @@ class User extends Authenticatable
         'first_name',
         'last_name',
         'email',
+        'cargo',
         'password',
     ];
 
@@ -44,4 +45,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function password_reset()
+    {
+        return $this->hasMany(PasswordReset::class);
+    }
+
+    public function user_options()
+    {
+        return $this->belongsToMany(OptionApp::class,'user_optios','user_id','option_id');
+    }
 }

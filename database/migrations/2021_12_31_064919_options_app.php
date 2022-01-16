@@ -19,6 +19,7 @@ class OptionsApp extends Migration
             $table->string('description',255)->nullable();
             $table->string('path_option',20)->unique();
             $table->integer('group_option');
+            $table->string('icono',255);
             $table->timestamps();
         });
     }

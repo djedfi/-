@@ -31,7 +31,7 @@ class CarController extends Controller
          }
          catch(\Exception $e)
          {
-             return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+             return \response()->json(['res'=>false,'message'=>$e],200);
          }
     }
 
@@ -44,8 +44,6 @@ class CarController extends Controller
     public function store(Request $request)
     {
         //
-        $input_f = array();
-
         $rules = [
             'slc_trim_car'          =>          'required|exists:App\Models\Trim,id',
             'txt_year_car'          =>          'required|digits:4|integer|min:1990|max:'.(date('Y')+1),
@@ -60,11 +58,11 @@ class CarController extends Controller
             'slc_fueltype_car'      =>          'required|integer|between:1,2',
             'txt_mileage_car'       =>          'required|integer',
             'hid_color_car'         =>          'required|string|max:7',
-            'txt_engineinfo_car'    =>          'string|max:45',
-            'txt_drivetrain_car'    =>          'string|max:45',
-            'txt_fuelecono_car'     =>          'string|max:45',
-             'txt_wheelsize_car'     =>          'string|max:45',
-             'txt_url_car'           =>          'string|max:150|url'
+            'txt_engineinfo_car'    =>          'nullable|string|max:45',
+            'txt_drivetrain_car'    =>          'nullable|string|max:45',
+            'txt_fuelecono_car'     =>          'nullable|string|max:45',
+            'txt_wheelsize_car'     =>          'nullable|string|max:45',
+            'txt_url_car'           =>          'nullable|string|max:150'
         ];
 
         try
@@ -116,7 +114,7 @@ class CarController extends Controller
         }
         catch(\Exception $e)
         {
-            return \response()->json(['res'=>false,'message'=>$e],200);
+            return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
         }
     }
 
@@ -155,7 +153,7 @@ class CarController extends Controller
     }
 
 
-    public function ChechVIN(Request $request,$id)
+    public function CheckVIN(Request $request,$id)
     {
         if($id == 0)
         {
@@ -175,7 +173,7 @@ class CarController extends Controller
         }
     }
 
-    public function ChechSckNumber(Request $request,$id)
+    public function CheckSckNumber(Request $request,$id)
     {
         if($id == 0)
         {

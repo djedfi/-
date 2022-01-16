@@ -10,6 +10,8 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\StyleController;
 use App\Http\Controllers\CarController;
+use App\Http\Controllers\StateController;
+use App\Http\Controllers\CustomerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,9 +32,11 @@ Route::group(['middleware'=>['auth:sanctum']],function()
 {
     Route::get("usersget/{user}",[App\Http\Controllers\UserController::class,'show']);
     Route::post("logout",[App\Http\Controllers\AuthController::class,'logout']);
-    Route::get("usersget",[App\Http\Controllers\UserController::class,'index']);
 
+    Route::post("register",[App\Http\Controllers\AuthController::class,'register']);
 
+    //para el formulario de agregar nuevo usuario
+    Route::post("checkemailUser/{id}",[App\Http\Controllers\AuthController::class,'CheckEmail']);
 
     Route::resource("optiosapp",OptionAppController::class);
 
@@ -51,15 +55,22 @@ Route::group(['middleware'=>['auth:sanctum']],function()
     Route::resource("styles", StyleController::class);
 
     Route::resource("cars", CarController::class);
-    Route::post("checkvincar/{id}",[App\Http\Controllers\CarController::class,'ChechVIN']);
-    Route::post("checksnumbercar/{id}",[App\Http\Controllers\CarController::class,'ChechSckNumber']);
+    Route::post("checkvincar/{id}",[App\Http\Controllers\CarController::class,'CheckVIN']);
+    Route::post("checksnumbercar/{id}",[App\Http\Controllers\CarController::class,'CheckSckNumber']);
+
+    Route::resource("states", StateController::class);
+
+    Route::resource("customers", CustomerController::class);
+    Route::post("checkdriverlCust/{id}",[App\Http\Controllers\CustomerController::class,'CheckDriverL']);
+    Route::post("checkemailCust/{id}",[App\Http\Controllers\CustomerController::class,'CheckEmail']);
+    Route::post("checkdbirthCust",[App\Http\Controllers\CustomerController::class,'CheckDateBirth']);
+    Route::post("checkssnCust/{id}",[App\Http\Controllers\CustomerController::class,'CheckSSN']);
+
 
 });
 
 
 //Public Routes
-
 Route::post("login",[App\Http\Controllers\AuthController::class,'login']);
-Route::post("register",[App\Http\Controllers\AuthController::class,'register']);
-
-
+Route::post("reset_password",[App\Http\Controllers\AuthController::class,'reset_password']);
+Route::post("save_password",[App\Http\Controllers\AuthController::class,'save_password']);

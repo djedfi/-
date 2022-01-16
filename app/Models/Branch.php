@@ -43,6 +43,6 @@ class Branch extends Model
 
     public function car()
     {
-        return  $this->hasMany(Car::class);
+        return $this->hasMany(Car::class);
     }
 }

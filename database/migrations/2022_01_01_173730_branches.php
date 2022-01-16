@@ -27,13 +27,6 @@ class Branches extends Migration
             $table->timestamps();
         });
 
-        if(Schema::hasTable('cars'))
-        {
-            Schema::table('cars', function (Blueprint $table) {
-                $table->foreign('branch_id')->references('id')->on('branches')->onUpdate('cascade')->onDelete('restrict');
-            });
-        }
-
     }
 
     /**

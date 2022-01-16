@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 
+
 class UserController extends Controller
 {
     /**
@@ -20,7 +21,7 @@ class UserController extends Controller
         {
             if(count(User::all()) > 0)
             {
-                return \response()->json(['res'=>true,'data'=>User::all()],200);
+                return \response()->json(['res'=>true,'data'=>User::with(['user_options:id,name,path_option,group_option'])->get()],200);
             }
             else
             {
@@ -29,7 +30,7 @@ class UserController extends Controller
         }
         catch(\Exception $e)
         {
-            return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+            return \response()->json(['res'=>false,'message'=>$e],200);
         }
 
     }
@@ -182,4 +183,6 @@ class UserController extends Controller
             return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
         }
     }
+
+
 }

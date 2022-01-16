@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OptionApp extends Model
+class State extends Model
 {
     use HasFactory;
 
-    protected $table = 'options_app';
+    protected $table = 'states';
 
     /**
      * The attributes that are mass assignable.
@@ -17,11 +17,7 @@ class OptionApp extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'descripcion',
-        'path_option',
-        'group_option',
-        'icono'
+        'name'
     ];
 
     /**
@@ -34,8 +30,8 @@ class OptionApp extends Model
         'updated_at'
     ];
 
-    public function user()
+    public function customer()
     {
-        return $this->belongsToMany(User::class);
+        return $this->hasMany(Customer::class);
     }
 }
