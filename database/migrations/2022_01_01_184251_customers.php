@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class Customers extends Migration
 {
@@ -32,11 +33,15 @@ class Customers extends Migration
             $table->char('cellphone',10);
             $table->string('email',150)->unique();
             $table->date('birthday');
+            $table->integer('gender');
             $table->string('ssn',150)->unique();
             $table->foreign('state_id')->references('id')->on('states')->onUpdate('cascade')->onDelete('restrict');
 
             $table->timestamps();
         });
+
+        //1=Female; 2= Male; 3= Other
+        DB::statement('ALTER TABLE customers ADD CONSTRAINT chk_gender CHECK (gender between 1 and 3);');
     }
 
     /**

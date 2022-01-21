@@ -254,11 +254,13 @@ class AuthController extends Controller
                 }
                 else
                 {
+                    DB::rollback();
                     return \response()->json(['res'=>false,'message'=>'Invalid password reset code'],200);
                 }
             }
             else
             {
+                DB::rollback();
                 return \response()->json(['res'=>false,'message'=>'Error: The form was changed'],200);
             }
         }
@@ -283,6 +285,29 @@ class AuthController extends Controller
             else
             {
                 return \response()->json(['res'=>false],200);
+            }
+        }
+        else if($id > 0)
+        {
+            $email_input=   $request->txt_email_user;
+            $user       =   User::where('id',$id)->first();
+
+
+            if($user && ($user->email == $email_input))
+            {
+                return \response()->json(['res'=>false],200);
+            }
+            else
+            {
+                $user_check       =   User::where('email',$email_input)->first();
+                if($user_check)
+                {
+                    return \response()->json(['res'=>true],200);
+                }
+                else
+                {
+                    return \response()->json(['res'=>false],200);
+                }
             }
 
         }

@@ -30,6 +30,7 @@ class Car extends Model
         'transmission',
         'condition_car',
         'fuel_type',
+        'estado',
         'fuel_economy',
         'engine',
         'drivetrain',

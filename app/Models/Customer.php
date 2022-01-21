@@ -33,6 +33,7 @@ class Customer extends Model
         'cellphone',
         'email',
         'birthday',
+        'gender',
         'ssn'
     ];
 

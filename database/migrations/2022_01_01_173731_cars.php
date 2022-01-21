@@ -31,6 +31,7 @@ class Cars extends Migration
             $table->integer('transmission');
             $table->integer('condition_car');
             $table->integer('fuel_type');
+            $table->integer('estado');
             $table->string('fuel_economy',45)->nullable();
             $table->string('engine',45)->nullable();
             $table->string('drivetrain',45)->nullable();
@@ -50,6 +51,8 @@ class Cars extends Migration
         DB::statement('ALTER TABLE cars ADD CONSTRAINT chk_condition_car CHECK (condition_car = 1 or condition_car = 2);');
         //1=Gasoline;2=Diesel;3= Hybrid;4=Electric
         DB::statement('ALTER TABLE cars ADD CONSTRAINT chk_fuel_type CHECK (fuel_type = 1 or fuel_type = 2 or fuel_type = 3 or fuel_type = 4);');
+        //1=active;2=Sold;3= Holdon;4=Other
+        DB::statement('ALTER TABLE cars ADD CONSTRAINT chk_estado CHECK (estado = 1 or estado = 2 or estado = 3 or estado = 4);');
 
 
     }

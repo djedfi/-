@@ -86,6 +86,22 @@ class StyleController extends Controller
     public function show($id)
     {
         //
+        try
+        {
+            if(Style::where('id',$id)->count())
+            {
+                $style = Style::get()->find($id);
+                return \response()->json(['res'=>true,'datos'=>$style],200);
+            }
+            else
+            {
+                return \response()->json(['res'=>false,'message'=>config('constants.msg_no_existe_srv')],200);
+            }
+        }
+        catch(\Exception $e)
+        {
+            return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+        }
     }
 
     /**
@@ -97,7 +113,46 @@ class StyleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $inputs_f       = array();
+        $rules = [
+            'txt_name_st'     =>       'required|string|max:45'
+        ];
+
+        $inputs              =   $request->all();
+        try
+        {
+            $obj_validacion     = Validator::make($inputs,$rules);
+
+            if(!$obj_validacion->fails())
+            {
+                $style   =   Style::find($id);
+                if($style->id == $id)
+                {
+                    $inputs_f['name']       =   $inputs['txt_name_st'];
+                    $upd_style               =   $style->update($inputs_f);
+                    if($upd_style)
+                    {
+                        return \response()->json(['res'=>true,'message'=>config('constants.msg_ok_srv')],200);
+                    }
+                    else
+                    {
+                        return \response()->json(['res'=>true,'message'=>config('constants.msg_error_operacion_srv')],200);
+                    }
+                }
+                else
+                {
+                    return \response()->json(['res'=>true,'message'=>config('constants.msg_error_existe_srv')],200);
+                }
+            }
+            else
+            {
+                return \response()->json(['res'=>true,'message'=>$obj_validacion->errors()],200);
+            }
+        }
+        catch(\Exception $e)
+        {
+            return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+        }
     }
 
     /**
@@ -108,6 +163,24 @@ class StyleController extends Controller
      */
     public function destroy($id)
     {
-        //
+         //
+         try
+         {
+             $count_style     =   Style::where('id',$id)->count();
+
+             if($count_style > 0)
+             {
+                Style::destroy($id);
+                 return \response()->json(['res'=>true,'message'=>config('constants.msg_ok_srv')],200);
+             }
+             else
+             {
+                 return \response()->json(['res'=>true,'message'=>config('constants.msg_error_existe_srv')],200);
+             }
+         }
+         catch(\Exception $e)
+         {
+             return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+         }
     }
 }

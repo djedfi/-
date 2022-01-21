@@ -3,8 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use App\Models\User;
+use App\Models\UserOption;
+
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 
 class UserController extends Controller
@@ -21,7 +26,7 @@ class UserController extends Controller
         {
             if(count(User::all()) > 0)
             {
-                return \response()->json(['res'=>true,'data'=>User::with(['user_options:id,name,path_option,group_option'])->get()],200);
+                return \response()->json(['res'=>true,'data'=>User::with(['user_options:id,name'])->get()],200);
             }
             else
             {
@@ -91,7 +96,7 @@ class UserController extends Controller
         {
             if(User::where('id',$id)->count())
             {
-                $user = User::get()->find($id);
+                $user = User::with(['user_options:id,name'])->get()->find($id);
                 return \response()->json(['res'=>true,'datos'=>$user],200);
             }
             else
@@ -115,12 +120,18 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $rules = [
-            'first_name'     =>       'required|string|max:50',
-            'last_name'      =>       'required|string|max:50',
-            'email'          =>       'required|max:150|unique:users,email,'.$id
+            'txt_fname_update_user'         =>       'required|string|max:50',
+            'txt_lname_update_user'         =>       'required|string|max:50',
+            'txt_email_update_user'         =>       'required|max:150|unique:users,email,'.$id,
+            'txt_position_update_user'      =>       'required|string|max:150'
         ];
 
+        $input_f            =   array();
         $input              =   $request->all();
+        $hid_id_option      =   $input['hid_options_update_usr'];
+        $collect_hid        =   Str::of($hid_id_option)->explode(',');
+
+        DB::beginTransaction();
         try
         {
             $obj_validacion     = Validator::make($input,$rules);
@@ -130,28 +141,47 @@ class UserController extends Controller
                 $user   =   User::find($id);
                 if($user->id == $id)
                 {
-                    $auto_user       =   $user->update($input);
+                    $input_f['first_name']  =   $input['txt_fname_update_user'];
+                    $input_f['last_name']   =   $input['txt_lname_update_user'];
+                    $input_f['email']       =   $input['txt_email_update_user'];
+                    $input_f['cargo']       =   $input['txt_position_update_user'];
+                    $auto_user              =   $user->update($input_f);
+
                     if($auto_user)
                     {
+                        UserOption::where('user_id',$id)->delete();
+
+                        foreach($collect_hid as $valor)
+                        {
+                            UserOption::create([
+                                'user_id' => $user->id,
+                                'option_id' => $valor
+                            ]);
+                        }
+                        DB::commit();
                         return \response()->json(['res'=>true,'message'=>config('constants.msg_ok_srv')],200);
                     }
                     else
                     {
-                        return \response()->json(['res'=>true,'message'=>config('constants.msg_error_operacion_srv')],200);
+                        DB::rollback();
+                        return \response()->json(['res'=>false,'message'=>config('constants.msg_error_operacion_srv')],200);
                     }
                 }
                 else
                 {
-                    return \response()->json(['res'=>true,'message'=>config('constants.msg_error_existe_srv')],200);
+                    DB::rollback();
+                    return \response()->json(['res'=>false,'message'=>config('constants.msg_error_existe_srv')],200);
                 }
             }
             else
             {
-                return \response()->json(['res'=>true,'message'=>$obj_validacion->errors()],200);
+                DB::rollback();
+                return \response()->json(['res'=>false,'message'=>$obj_validacion->errors()],200);
             }
         }
         catch(\Exception $e)
         {
+            DB::rollback();
             return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
         }
     }

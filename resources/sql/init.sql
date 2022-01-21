@@ -6,7 +6,7 @@ INSERT INTO `db_autos`.`options_app` (`name`, `description`, `path_option`, `gro
 
 INSERT INTO `db_autos`.`options_app` (`name`, `description`, `path_option`, `group_option`, `icono`) VALUES ('Cars', 'CRUD Cars', 'car', '2','fa-car');
 INSERT INTO `db_autos`.`options_app` (`name`, `description`, `path_option`, `group_option`, `icono`) VALUES ('Customer', 'CRUD Customer', 'customer', '2','fa-users');
-INSERT INTO `db_autos`.`options_app` (`name`, `description`, `path_option`, `group_option`, `icono`) VALUES ('Sales', 'CRUD Sales', 'sales', '2','fa-cart-plus');
+INSERT INTO `db_autos`.`options_app` (`name`, `description`, `path_option`, `group_option`, `icono`) VALUES ('Car Loans', 'CRUD Sales', 'sales', '2','fa-cart-plus');
 
 
 INSERT INTO `db_autos`.`states` (`name`) VALUES ('California');

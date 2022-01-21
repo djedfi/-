@@ -20,7 +20,7 @@ class ModeloController extends Controller
         {
             if(count(Modelo::all()) > 0)
             {
-                $modelos  = Modelo::with(['make:id,name,website'])->get();
+                $modelos  = Modelo::with(['make:id,name,website'])->orderBy('name','asc')->get();
                 return \response()->json(['res'=>true,'data'=>$modelos],200);
             }
             else
@@ -145,9 +145,10 @@ class ModeloController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $inputs_f       = array();
         $rules = [
-            'slc_brand_md'    =>       'required|exists:App\Models\Make,id',
-            'txt_name_md'     =>       'required|string|max:45'
+            'slc_brand_md_up'    =>       'required|exists:App\Models\Make,id',
+            'txt_name_md_up'     =>       'required|string|max:45'
         ];
 
         $inputs              =   $request->all();
@@ -160,7 +161,9 @@ class ModeloController extends Controller
                 $modelo   =   Modelo::find($id);
                 if($modelo->id == $id)
                 {
-                    $upd_modelo               =   $modelo->update($inputs);
+                    $inputs_f['make_id']        =   $inputs['slc_brand_md_up'];
+                    $inputs_f['name']           =   $inputs['txt_name_md_up'];
+                    $upd_modelo                 =   $modelo->update($inputs_f);
                     if($upd_modelo)
                     {
                         return \response()->json(['res'=>true,'message'=>config('constants.msg_ok_srv')],200);

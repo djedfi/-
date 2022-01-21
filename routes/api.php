@@ -30,7 +30,8 @@ use App\Http\Controllers\CustomerController;
 //Protected Routes
 Route::group(['middleware'=>['auth:sanctum']],function()
 {
-    Route::get("usersget/{user}",[App\Http\Controllers\UserController::class,'show']);
+    Route::resource("users",App\Http\Controllers\UserController::class);
+
     Route::post("logout",[App\Http\Controllers\AuthController::class,'logout']);
 
     Route::post("register",[App\Http\Controllers\AuthController::class,'register']);
@@ -47,6 +48,7 @@ Route::group(['middleware'=>['auth:sanctum']],function()
 
     Route::resource("trims", TrimController::class);
     Route::get("trimsbmodel/{model}",[App\Http\Controllers\TrimController::class,'getTrimByModelo']);
+    Route::get("gettrimfull/{id}",[App\Http\Controllers\TrimController::class,'getTrimFull']);
 
     Route::resource("companies", CompanyController::class);
 
@@ -57,6 +59,8 @@ Route::group(['middleware'=>['auth:sanctum']],function()
     Route::resource("cars", CarController::class);
     Route::post("checkvincar/{id}",[App\Http\Controllers\CarController::class,'CheckVIN']);
     Route::post("checksnumbercar/{id}",[App\Http\Controllers\CarController::class,'CheckSckNumber']);
+    Route::get("getCarTable",[App\Http\Controllers\CarController::class,'getCarTable']);
+    Route::get("getFullCar/{id}",[App\Http\Controllers\CarController::class,'getFullCar']);
 
     Route::resource("states", StateController::class);
 
