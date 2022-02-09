@@ -26,7 +26,7 @@ class CustomerController extends Controller
             }
             else
             {
-                return \response()->json(['res'=>false,'message'=>config('constants.msg_empty')],200);
+                return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_empty')],200);
             }
         }
         catch(\Exception $e)
@@ -46,14 +46,13 @@ class CustomerController extends Controller
          //
          $rules = [
             'txt_fname_cus'             =>      'required|max:250',
-            'txt_init_cus'              =>      'required|max:4',
+            'txt_init_cus'              =>      'nullable|max:4',
             'txt_lname_cus'             =>      'required|max:250',
             'txt_mobile_cus'            =>      'required|max:10',
-            'txt_email_cus'             =>      'required|string|max:150|unique:customers,email',
-            'txt_dlicense_cus'          =>      'required|string|max:15|unique:customers,licence',
-            'slc_statelic_cus'          =>      'required|string|max:45',
-            'txt_bday_cus'              =>      'required|date_format:m/d/Y',
-            'txt_ssn_cus'               =>      'required|regex:/^\d{3}-\d{2}-\d{4}$/|unique:customers,ssn',
+            'txt_email_cus'             =>      'nullable|string|max:150|unique:customers,email',
+            'txt_dlicense_cus'          =>      'nullable|string|max:15|unique:customers,license',
+            'slc_statelic_cus'          =>      'nullable|string|max:45',
+            'txt_bday_cus'              =>      'nullable|date_format:m/d/Y',
             'txt_paddress_cus'          =>      'required|max:250',
             'txt_saddress_cus'          =>      'nullable|max:150',
             'txt_city_cus'              =>      'required|max:100',
@@ -76,15 +75,19 @@ class CustomerController extends Controller
 
             if(!$obj_validacion->fails())
             {
-                list($m_temp,$d_temp,$Y_temp)      =   explode('/',$inputs['txt_bday_cus']);
+                if(!is_null($inputs['txt_bday_cus']))
+                {
+                    list($m_temp,$d_temp,$Y_temp)      =   explode('/',$inputs['txt_bday_cus']);
+                }
+
 
                 $customer       =   Customer::create([
                     'state_id'          => $inputs['slc_state_cus'],
                     'customer_id'       => $this->create_customerid($inputs['txt_fname_cus'],$inputs['txt_lname_cus'],$inputs['txt_bday_cus']),
-                    'licence'           => $inputs['txt_dlicense_cus'],
+                    'license'           => $inputs['txt_dlicense_cus'],
                     'state_licence'     => $inputs['slc_statelic_cus'],
-                    'first_name'        => Str::of($inputs['txt_fname_cus'])->upper(),
-                    'last_name'         => Str::of($inputs['txt_lname_cus'])->upper(),
+                    'first_name'        => $inputs['txt_fname_cus'],
+                    'last_name'         => $inputs['txt_lname_cus'],
                     'initial'           => Str::of($inputs['txt_init_cus'])->upper(),
                     'address_p'         => $inputs['txt_paddress_cus'],
                     'address_s'         => $inputs['txt_saddress_cus'],
@@ -94,8 +97,7 @@ class CustomerController extends Controller
                     'telephone_bus'     => $inputs['txt_business_cus'],
                     'cellphone'         => $inputs['txt_mobile_cus'],
                     'email'             => Str::of($inputs['txt_email_cus'])->lower(),
-                    'birthday'          => $Y_temp.'-'.$m_temp.'-'.$d_temp,
-                    'ssn'               => str_replace('-','',$inputs['txt_ssn_cus']),
+                    'birthday'          => is_null($inputs['txt_bday_cus']) ? NULL : $Y_temp.'-'.$m_temp.'-'.$d_temp,
                     'gender'            => $inputs['slc_gender_cus']
                 ]);
 
@@ -121,15 +123,13 @@ class CustomerController extends Controller
 
     }
 
-    private function create_customerid($fname,$lname,$birthday)
+    private function create_customerid($fname,$lname)
     {
-        $year_actual        =    date('Y');
-        $last_year_actual   =   Str::of(substr($year_actual,-2))->upper();
         $f_fname            =   Str::of(substr($fname,0,1))->upper();
         $f_lname            =   substr($lname,0,1);
         $caracter_paridad    =   $this->getLetraRandom();
-        list($m,$d,$Y)      =   explode('/',$birthday);
-        return $f_fname.$f_lname.$last_year_actual.substr($Y,-2).$m.$caracter_paridad;
+
+        return $f_fname.$f_lname.date('Y').date('m').$caracter_paridad;
     }
 
     private function getLetraRandom($length = 1)
@@ -162,7 +162,7 @@ class CustomerController extends Controller
             }
             else
             {
-                return \response()->json(['res'=>false,'message'=>config('constants.msg_no_existe_srv')],200);
+                return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_no_existe_srv')],200);
             }
         }
         catch(\Exception $e)
@@ -183,14 +183,13 @@ class CustomerController extends Controller
         $input_f    = array();
         $rules = [
             'txt_fname_cus_upd'             =>      'required|max:250',
-            'txt_init_cus_upd'              =>      'required|max:4',
+            'txt_init_cus_upd'              =>      'nullable|max:4',
             'txt_lname_cus_upd'             =>      'required|max:250',
             'txt_mobile_cus_upd'            =>      'required|max:10',
             'txt_email_cus_upd'             =>      'required|string|max:150|unique:customers,email,'.$id,
-            'txt_dlicense_cus_upd'          =>      'required|string|max:15|unique:customers,licence,'.$id,
+            'txt_dlicense_cus_upd'          =>      'required|string|max:15|unique:customers,license,'.$id,
             'slc_statelic_cus_upd'          =>      'required|string|max:45',
             'txt_bday_cus_upd'              =>      'required|date_format:m/d/Y',
-            'txt_ssn_cus_upd'               =>      'required|regex:/^\d{3}-\d{2}-\d{4}$/|unique:customers,ssn,'.$id,
             'txt_paddress_cus_upd'          =>      'required|max:250',
             'txt_saddress_cus_upd'          =>      'nullable|max:150',
             'txt_city_cus_upd'              =>      'required|max:100',
@@ -218,10 +217,10 @@ class CustomerController extends Controller
                 if($customer->id == $id)
                 {
                     $input_f['state_id']        = $inputs['slc_state_cus_upd'];
-                    $input_f['licence']         = $inputs['txt_dlicense_cus_upd'];
+                    $input_f['license']         = $inputs['txt_dlicense_cus_upd'];
                     $input_f['state_licence']   = $inputs['slc_statelic_cus_upd'];
-                    $input_f['first_name']      = Str::of($inputs['txt_fname_cus_upd'])->upper();
-                    $input_f['last_name']       = Str::of($inputs['txt_lname_cus_upd'])->upper();
+                    $input_f['first_name']      = $inputs['txt_fname_cus_upd'];
+                    $input_f['last_name']       = $inputs['txt_lname_cus_upd'];
                     $input_f['initial']         = Str::of($inputs['txt_init_cus_upd'])->upper();
                     $input_f['address_p']       = $inputs['txt_paddress_cus_upd'];
                     $input_f['address_s']       = $inputs['txt_saddress_cus_upd'];
@@ -232,7 +231,6 @@ class CustomerController extends Controller
                     $input_f['cellphone']       = $inputs['txt_mobile_cus_upd'];
                     $input_f['email']           = Str::of($inputs['txt_email_cus_upd'])->lower();
                     $input_f['birthday']        = $Y_temp.'-'.$m_temp.'-'.$d_temp;
-                    $input_f['ssn']             = str_replace('-','',$inputs['txt_ssn_cus_upd']);
                     $input_f['gender']          = $inputs['slc_gender_cus_upd'];
                     $update_customer            = $customer->update($input_f);
 
@@ -278,7 +276,7 @@ class CustomerController extends Controller
         {
             $driver_lic    = $request->txt_dlicense_cus;
 
-            if(Customer::where('licence','=',$driver_lic)->count() > 0)
+            if(Customer::where('license','=',$driver_lic)->count() > 0)
             {
                 return \response()->json(['res'=>true],200);
             }
@@ -292,13 +290,13 @@ class CustomerController extends Controller
             $driver_lic          =   $request->txt_dlicense_cus;
             $customer            =   Customer::where('id',$id)->first();
 
-            if($customer && ($customer->licence == $driver_lic))
+            if($customer && ($customer->license == $driver_lic))
             {
                 return \response()->json(['res'=>false],200);
             }
             else
             {
-                $license_check       =   Customer::where('licence',$driver_lic)->first();
+                $license_check       =   Customer::where('license',$driver_lic)->first();
                 if($license_check)
                 {
                     return \response()->json(['res'=>true],200);

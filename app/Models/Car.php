@@ -62,4 +62,9 @@ class Car extends Model
     {
         return $this->belongsTo(Branch::class);
     }
+
+    public function loan()
+    {
+        return $this->hasMany(Loan::class);
+    }
 }

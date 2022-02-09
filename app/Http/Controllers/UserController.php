@@ -49,6 +49,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $rules = [
+            'branch_id'     =>        'required|exists:App\Models\Branch,id',
             'first_name'     =>       'required|string|max:50',
             'last_name'      =>       'required|string|max:50',
             'email'          =>       'required|max:150|unique:users,email',
@@ -120,6 +121,7 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $rules = [
+            'slc_branch_update_user'        =>       'required|exists:App\Models\Branch,id',
             'txt_fname_update_user'         =>       'required|string|max:50',
             'txt_lname_update_user'         =>       'required|string|max:50',
             'txt_email_update_user'         =>       'required|max:150|unique:users,email,'.$id,
@@ -141,6 +143,7 @@ class UserController extends Controller
                 $user   =   User::find($id);
                 if($user->id == $id)
                 {
+                    $input_f['branch_id']   =   $input['slc_branch_update_user'];
                     $input_f['first_name']  =   $input['txt_fname_update_user'];
                     $input_f['last_name']   =   $input['txt_lname_update_user'];
                     $input_f['email']       =   $input['txt_email_update_user'];

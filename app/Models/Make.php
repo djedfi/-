@@ -32,6 +32,16 @@ class Make extends Model
         'updated_at'
     ];
 
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = strtoupper($value);
+    }
+
+    public function setWebSiteAttribute($value)
+    {
+        $this->attributes['website'] = strtolower($value);
+    }
+
     public function modelo()
     {
         return $this->hasMany(Modelo::class);

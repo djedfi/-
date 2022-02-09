@@ -18,23 +18,33 @@ class Loans extends Migration
         Schema::create('loans', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('customer_id');
-            $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('car_id');
+            $table->unsignedBigInteger('user_id');
             $table->decimal('price',10,2);
             $table->decimal('downpayment',10,2);
             $table->decimal('value_trade',10,2)->nullable();
             $table->integer('long_term');
             $table->decimal('interest_rate',10,2);
-            $table->decimal('payments',10,2);
-            $table->date('start_day');
-            $table->integer('tipo_loan');
+            $table->decimal('taxes_rate',10,2);
+            $table->decimal('minimun_payment',10,2);
+            $table->date('loan_date');
+            $table->date('start_payment');
+            $table->decimal('late_fee',10,2);
+            $table->integer('days_late');
+            $table->boolean('pago_automatico');
+            $table->decimal('pay_documentation',10,2);
+            $table->decimal('pay_placa',10,2);
+            $table->decimal('total_financed',10,2);
+            $table->decimal('balance',10,2);
             $table->timestamps();
-        });
-        //1=24 meses; 2=36 meses; 3=48 meses; 4=60 meses; 6=72 meses; 7=84 meses;
-        DB::statement('ALTER TABLE loans ADD CONSTRAINT chk_long_term CHECK (long_term between 1 and 6);');
 
-        //1=buy; 2= trade; 3= finance
-        DB::statement('ALTER TABLE loans ADD CONSTRAINT chk_tipo_loan CHECK (tipo_loan between 1 and 3);');
+            //llaves foraneas
+            $table->foreign('customer_id')->references('id')->on('customers')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreign('car_id')->references('id')->on('cars')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
+        });
+
+
     }
 
     /**
@@ -48,3 +58,4 @@ class Loans extends Migration
         Schema::dropIfExists('loans');
     }
 }
+

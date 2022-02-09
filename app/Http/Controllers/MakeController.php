@@ -46,13 +46,13 @@ class MakeController extends Controller
         //
         $rules = [
             'txt_name_mk'     =>       'required|string|max:45',
-            'txt_url_mk'      =>       'required|url|max:150'
+            'txt_url_mk'      =>       'nullable|string|max:150'
         ];
 
         try
         {
             $inputs              =   $request->all();
-            $inputs['txt_url_mk']=   'https://'.$inputs['txt_url_mk'];
+            $inputs['txt_url_mk']=   (is_null($inputs['txt_url_mk']) ? '' : 'https://'.$inputs['txt_url_mk']);
             $obj_validacion     = Validator::make($inputs,$rules);
 
             if(!$obj_validacion->fails())
@@ -121,13 +121,13 @@ class MakeController extends Controller
         $inputs_f       = array();
         $rules = [
             'txt_name_mk'     =>       'required|string|max:45',
-            'txt_url_mk'      =>       'required|url|max:150'
+            'txt_url_mk'      =>       'nullable|string|max:150'
         ];
 
         $inputs              =   $request->all();
         try
         {
-            $inputs['txt_url_mk']=   'https://'.$inputs['txt_url_mk'];
+            $inputs['txt_url_mk']=   (is_null($inputs['txt_url_mk']) ? '' : 'https://'.$inputs['txt_url_mk']);
             $obj_validacion     = Validator::make($inputs,$rules);
 
             if(!$obj_validacion->fails())

@@ -30,6 +30,10 @@ class Modelo extends Model
         'created_at',
         'updated_at'
     ];
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = strtoupper($value);
+    }
 
     public function make()
     {

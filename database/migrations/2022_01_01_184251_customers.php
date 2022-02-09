@@ -19,8 +19,8 @@ class Customers extends Migration
             $table->id();
             $table->unsignedBigInteger('state_id');
             $table->char('customer_id',9)->unique();
-            $table->string('licence',15)->unique();
-            $table->string('state_licence',45);
+            $table->string('license',15)->unique()->nullable();
+            $table->string('state_licence',45)->nullable();
             $table->string('first_name',250);
             $table->string('last_name',250);
             $table->string('initial',4)->nullable();
@@ -31,10 +31,10 @@ class Customers extends Migration
             $table->string('telephone_res',20)->nullable();
             $table->string('telephone_bus',20)->nullable();
             $table->char('cellphone',10);
-            $table->string('email',150)->unique();
-            $table->date('birthday');
+            $table->string('email',150)->unique()->nullable();
+            $table->date('birthday')->nullable();
             $table->integer('gender');
-            $table->string('ssn',150)->unique();
+            $table->string('ssn',150)->unique()->nullable();
             $table->foreign('state_id')->references('id')->on('states')->onUpdate('cascade')->onDelete('restrict');
 
             $table->timestamps();

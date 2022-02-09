@@ -45,4 +45,9 @@ class Branch extends Model
     {
         return $this->hasMany(Car::class);
     }
+
+    public function config()
+    {
+        return $this->hasMany(Config::class);
+    }
 }

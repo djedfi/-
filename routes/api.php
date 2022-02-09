@@ -12,6 +12,9 @@ use App\Http\Controllers\StyleController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\StateController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ConfigController;
+use App\Http\Controllers\LoanController;
+use App\Http\Controllers\PaymentLoanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,7 +62,7 @@ Route::group(['middleware'=>['auth:sanctum']],function()
     Route::resource("cars", CarController::class);
     Route::post("checkvincar/{id}",[App\Http\Controllers\CarController::class,'CheckVIN']);
     Route::post("checksnumbercar/{id}",[App\Http\Controllers\CarController::class,'CheckSckNumber']);
-    Route::get("getCarTable",[App\Http\Controllers\CarController::class,'getCarTable']);
+    Route::get("getCarTable/{estado}",[App\Http\Controllers\CarController::class,'getCarTable']);
     Route::get("getFullCar/{id}",[App\Http\Controllers\CarController::class,'getFullCar']);
 
     Route::resource("states", StateController::class);
@@ -70,7 +73,13 @@ Route::group(['middleware'=>['auth:sanctum']],function()
     Route::post("checkdbirthCust",[App\Http\Controllers\CustomerController::class,'CheckDateBirth']);
     Route::post("checkssnCust/{id}",[App\Http\Controllers\CustomerController::class,'CheckSSN']);
 
+    Route::resource("configs", ConfigController::class);
 
+    Route::resource("loans", LoanController::class);
+    Route::get("getReporteLoan/{id}",[App\Http\Controllers\LoanController::class,'getReporteLoan']);
+
+    Route::resource("payments", PaymentLoanController::class);
+    Route::get("getLastPaymentbyLoad/{id}",[App\Http\Controllers\PaymentLoanController::class,'getLastPaymentbyLoad']);
 });
 
 

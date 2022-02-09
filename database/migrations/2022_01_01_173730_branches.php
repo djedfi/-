@@ -27,6 +27,13 @@ class Branches extends Migration
             $table->timestamps();
         });
 
+        if(Schema::hasTable('users'))
+        {
+            Schema::table('users', function (Blueprint $table) {
+                $table->foreign('branch_id')->references('id')->on('branches')->onUpdate('cascade')->onDelete('restrict');
+            });
+        }
+
     }
 
     /**

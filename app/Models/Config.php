@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Style extends Model
+class Config extends Model
 {
     use HasFactory;
 
-    protected $table = 'styles';
+    protected $table = 'configs';
 
     /**
      * The attributes that are mass assignable.
@@ -17,7 +17,13 @@ class Style extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name'
+        'branch_id',
+        'long_term_default',
+        'porc_downpay_default',
+        'int_rate_default',
+        'latefee_default',
+        'dayslate_default',
+        'taxes_rate_default'
     ];
 
     /**
@@ -30,13 +36,8 @@ class Style extends Model
         'updated_at'
     ];
 
-    public function setNameAttribute($value)
+    public function branch()
     {
-        $this->attributes['name'] = strtoupper($value);
-    }
-
-    public function car()
-    {
-        return $this->hasMany(Car::class);
+        return $this->belongsTo(Branch::class);
     }
 }

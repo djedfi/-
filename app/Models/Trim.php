@@ -31,6 +31,11 @@ class Trim extends Model
         'updated_at'
     ];
 
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = strtoupper($value);
+    }
+
     public function modelo()
     {
         return $this->belongsTo(Modelo::class);

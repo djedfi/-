@@ -18,6 +18,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'branch_id',
         'first_name',
         'last_name',
         'email',
@@ -54,5 +55,20 @@ class User extends Authenticatable
     public function user_options()
     {
         return $this->belongsToMany(OptionApp::class,'user_optios','user_id','option_id');
+    }
+
+    public function loan()
+    {
+        return $this->hasMany(Loan::class);
+    }
+
+    public function payment_loan()
+    {
+        return $this->hasMany(PaymentLoan::class);
+    }
+
+    public function shedule_payment()
+    {
+        return $this->hasMany(SchedulePayment::class);
     }
 }

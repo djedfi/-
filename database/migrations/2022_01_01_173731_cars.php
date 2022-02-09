@@ -25,12 +25,12 @@ class Cars extends Migration
             $table->string('stock_number',8)->unique();
             $table->year('year');
             $table->decimal('precio',10,2);
-            $table->integer('doors');
-            $table->char('color',7);
-            $table->integer('mileage');
-            $table->integer('transmission');
+            $table->integer('doors')->nullable();
+            $table->char('color',7)->nullable();
+            $table->integer('mileage')->nullable();
+            $table->integer('transmission')->nullable();
             $table->integer('condition_car');
-            $table->integer('fuel_type');
+            $table->integer('fuel_type')->nullable();
             $table->integer('estado');
             $table->string('fuel_economy',45)->nullable();
             $table->string('engine',45)->nullable();

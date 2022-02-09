@@ -29,6 +29,7 @@ class AuthController extends Controller
         $array_final   = array();
 
         $rules = [
+            'slc_branch_user'   =>        'required|exists:App\Models\Branch,id',
             'txt_fname_user'     =>       'required|string|max:50',
             'txt_lname_user'     =>       'required|string|max:50',
             'txt_email_user'     =>       'required|string|max:150|unique:users,email|confirmed',
@@ -46,6 +47,7 @@ class AuthController extends Controller
             {
 
                 $user       =   User::create([
+                    'branch_id'     => $inputs['slc_branch_user'],
                     'first_name'    => $inputs['txt_fname_user'],
                     'last_name'     => $inputs['txt_lname_user'],
                     'email'         => $inputs['txt_email_user'],

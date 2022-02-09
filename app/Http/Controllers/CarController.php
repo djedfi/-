@@ -52,15 +52,15 @@ class CarController extends Controller
             'txt_year_car'          =>          'required|digits:4|integer|min:1990|max:'.(date('Y')+1),
             'txt_vin_car'           =>          'required|string|unique:cars,vin|max:17',
             'txt_stcnumber_car'     =>          'required|string|unique:cars,stock_number|max:8',
-            'txt_ndoors_car'        =>          'required|integer|min:1|max:10',
+            'txt_ndoors_car'        =>          'nullable|integer|min:1|max:10',
             'txt_price_car'         =>          'required|regex:/^\d+(\.\d{1,2})?$/',
             'slc_branch_car'        =>          'required|exists:App\Models\Branch,id',
             'slc_style_car'         =>          'required|exists:App\Models\Style,id',
-            'slc_transmi_car'       =>          'required|integer|min:1|max:3',
+            'slc_transmi_car'       =>          'nullable|integer|min:1|max:3',
             'slc_condicion_car'     =>          'required|integer|between:1,2',
-            'slc_fueltype_car'      =>          'required|integer|between:1,4',
-            'txt_mileage_car'       =>          'required|integer',
-            'hid_color_car'         =>          'required|string|max:7',
+            'slc_fueltype_car'      =>          'nullable|integer|between:1,4',
+            'txt_mileage_car'       =>          'nullable|integer',
+            'hid_color_car'         =>          'nullable|string|max:7',
             'txt_engineinfo_car'    =>          'nullable|string|max:45',
             'txt_drivetrain_car'    =>          'nullable|string|max:45',
             'txt_fuelecono_car'     =>          'nullable|string|max:45',
@@ -72,8 +72,8 @@ class CarController extends Controller
         {
             $inputs                     =   $request->all();
             $inputs['txt_price_car']    =   str_replace(array('US$ ',','),array('',''),$inputs['txt_price_car']);
-            $inputs['txt_url_car']      =   'https://'.$inputs['txt_url_car'];
-            $inputs['txt_mileage_car']  =   str_replace(',','',$inputs['txt_mileage_car']);
+            $inputs['txt_url_car']      =   is_null($inputs['txt_url_car']) ? '' : 'https://'.$inputs['txt_url_car'];
+            $inputs['txt_mileage_car']  =   is_null($inputs['txt_mileage_car']) ? 0 : str_replace(',','',$inputs['txt_mileage_car']);
 
             $obj_validacion     = Validator::make($inputs,$rules);
 
@@ -83,8 +83,8 @@ class CarController extends Controller
                     'trim_id'       => $inputs['slc_trim_car'],
                     'style_id'      => $inputs['slc_style_car'],
                     'branch_id'     => $inputs['slc_branch_car'],
-                    'vin'           => Str::of($inputs['txt_vin_car']),
-                    'stock_number'  => Str::of($inputs['txt_stcnumber_car']),
+                    'vin'           => Str::of($inputs['txt_vin_car'])->upper(),
+                    'stock_number'  => Str::of($inputs['txt_stcnumber_car'])->upper(),
                     'year'          => $inputs['txt_year_car'],
                     'precio'          => $inputs['txt_price_car'],
                     'doors'         => $inputs['txt_ndoors_car'],
@@ -197,8 +197,8 @@ class CarController extends Controller
                     $input_f['trim_id']       = $inputs['slc_trim_car_upd'];
                     $input_f['style_id']      = $inputs['slc_style_car_upd'];
                     $input_f['branch_id']     = $inputs['slc_branch_car_upd'];
-                    $input_f['vin']           = Str::of($inputs['txt_vin_car_upd']);
-                    $input_f['stock_number']  = Str::of($inputs['txt_stcnumber_car_upd']);
+                    $input_f['vin']           = Str::of($inputs['txt_vin_car_upd'])->upper();
+                    $input_f['stock_number']  = Str::of($inputs['txt_stcnumber_car_upd'])->upper();
                     $input_f['year']          = $inputs['txt_year_car_upd'];
                     $input_f['precio']        = $inputs['txt_price_car_upd'];
                     $input_f['doors']         = $inputs['txt_ndoors_car_upd'];
@@ -216,7 +216,7 @@ class CarController extends Controller
 
                     if($update_car)
                     {
-                        return \response()->json(['res'=>true,'message'=>config('constants.msg_new_srv')],200);
+                        return \response()->json(['res'=>true,'message'=>config('constants.msg_ok_srv')],200);
                     }
                     else
                     {
@@ -248,6 +248,24 @@ class CarController extends Controller
     public function destroy($id)
     {
         //
+        try
+        {
+            $count_car     =   Car::where('id',$id)->count();
+
+            if($count_car > 0)
+            {
+                Car::destroy($id);
+                return \response()->json(['res'=>true,'message'=>config('constants.msg_ok_srv')],200);
+            }
+            else
+            {
+                return \response()->json(['res'=>true,'message'=>config('constants.msg_error_existe_srv')],200);
+            }
+        }
+        catch(\Exception $e)
+        {
+            return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+        }
     }
 
 
@@ -269,7 +287,7 @@ class CarController extends Controller
         else if($id > 0)
         {
             $vin_input        =   Str::of($request->txt_vin_car)->upper();
-            $car        =   Car::where('id',$id)->first();
+            $car              =   Car::where('id',$id)->first();
 
             if($car && ($car->vin == $vin_input))
             {
@@ -328,16 +346,29 @@ class CarController extends Controller
         }
     }
 
-    public function getCarTable()
+    public function getCarTable($estado=0)
     {
         try
         {
+            if($estado == 0)
+            {
                 $cars  =   DB::table('makes as mk')
                         ->join('modelos as md','md.make_id', '=', 'mk.id')
                         ->join('trims as tr', 'tr.modelo_id', '=', 'md.id')
                         ->join('cars as cr', 'cr.trim_id', '=', 'tr.id')
-                        ->select('mk.id as id_make','md.id as id_modelo','tr.id as id_trim','cr.id as id_car','mk.name as name_make','md.name as name_modelo','tr.name as name_trim','cr.condition_car','cr.transmission','cr.fuel_type','cr.precio','cr.estado as estado_car')
+                        ->select('mk.id as id_make','md.id as id_modelo','tr.id as id_trim','cr.id as id_car','mk.name as name_make','md.name as name_modelo','tr.name as name_trim','cr.condition_car','cr.transmission','cr.fuel_type','cr.precio','cr.estado as estado_car','cr.vin as vin_car','cr.stock_number')
                         ->get();
+            }
+            else
+            {
+                $cars  =   DB::table('makes as mk')
+                ->join('modelos as md','md.make_id', '=', 'mk.id')
+                ->join('trims as tr', 'tr.modelo_id', '=', 'md.id')
+                ->join('cars as cr', 'cr.trim_id', '=', 'tr.id')
+                ->select('mk.id as id_make','md.id as id_modelo','tr.id as id_trim','cr.id as id_car','mk.name as name_make','md.name as name_modelo','tr.name as name_trim','cr.condition_car','cr.transmission','cr.fuel_type','cr.precio','cr.estado as estado_car','cr.vin as vin_car','cr.stock_number')
+                ->where('cr.estado',$estado)
+                ->get();
+            }
 
             if($cars->count())
             {
@@ -345,12 +376,12 @@ class CarController extends Controller
             }
             else
             {
-                return \response()->json(['res'=>true,'message'=>config('constants.msg_no_existe_srv')],200);
+                return \response()->json(['res'=>true,'data'=>[],'message'=>config('constants.msg_no_existe_srv')],200);
             }
         }
         catch(\Exception $e)
         {
-            return \response()->json(['res'=>false,'message'=>$e],200);
+            return \response()->json(['res'=>false,'data'=>[],'message'=>$e],200);
         }
     }
 
@@ -362,7 +393,8 @@ class CarController extends Controller
                     ->join('modelos as md','md.make_id', '=', 'mk.id')
                     ->join('trims as tr', 'tr.modelo_id', '=', 'md.id')
                     ->join('cars as cr', 'cr.trim_id', '=', 'tr.id')
-                    ->select('mk.id as id_make','md.id as id_modelo','tr.id as id_trim','cr.id as id_car','mk.name as name_make','md.name as name_modelo','tr.name as name_trim','cr.*')
+                    ->join('styles as st', 'st.id', '=', 'cr.style_id')
+                    ->select('mk.id as id_make','md.id as id_modelo','tr.id as id_trim','cr.id as id_car','mk.name as name_make','md.name as name_modelo','tr.name as name_trim','st.name as name_style','cr.*')
                     ->where('cr.id',$id)
                     ->get();
 

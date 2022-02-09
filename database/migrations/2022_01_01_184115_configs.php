@@ -23,6 +23,7 @@ class Configs extends Migration
             $table->decimal('int_rate_default',10,2);
             $table->decimal('latefee_default',10,2);
             $table->integer('dayslate_default');
+            $table->decimal('taxes_rate_default',10,2);
             $table->foreign('branch_id')->references('id')->on('branches')->onUpdate('cascade')->onDelete('restrict');
 
             $table->timestamps();

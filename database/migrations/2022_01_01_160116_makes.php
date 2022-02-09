@@ -17,7 +17,7 @@ class Makes extends Migration
         Schema::create('makes', function (Blueprint $table) {
             $table->id();
             $table->string('name',45);
-            $table->string('website',150);
+            $table->string('website',150)->nullable();
             $table->timestamps();
         });
     }
