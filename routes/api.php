@@ -15,6 +15,8 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\PaymentLoanController;
+use App\Http\Controllers\ShedulePaymentController;
+use App\Http\Controllers\EstadisticaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,6 +82,20 @@ Route::group(['middleware'=>['auth:sanctum']],function()
 
     Route::resource("payments", PaymentLoanController::class);
     Route::get("getLastPaymentbyLoad/{id}",[App\Http\Controllers\PaymentLoanController::class,'getLastPaymentbyLoad']);
+    Route::get("sendReceipt/{id}",[App\Http\Controllers\PaymentLoanController::class,'sendReceipt']);
+
+    Route::get("getReporteSchedule/{id}",[ShedulePaymentController::class,'getReporteSchedule']);
+
+    Route::get("getCardCar",[EstadisticaController::class,'getCarEstadistica']);
+    Route::get("getCardCustomer",[EstadisticaController::class,'getCustomerEstadistica']);
+    Route::get("getCardLoan",[EstadisticaController::class,'getLoanEstadistica']);
+    Route::get("getCardPayment",[EstadisticaController::class,'getPaymentEstadistica']);
+    Route::get("getCardPaymentToday",[EstadisticaController::class,'getPaymentToday']);
+    Route::get("getPaymentDue",[EstadisticaController::class,'getPaymentDue']);
+    Route::get("getFPagoEstadistica",[EstadisticaController::class,'getFPagoEstadistica']);
+
+
+
 });
 
 

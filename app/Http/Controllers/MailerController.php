@@ -7,12 +7,20 @@ use Illuminate\Http\Request;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
-
+use Illuminate\Support\Facades\DB;
 
 class MailerController extends Controller
 {
     //
-    public function composeEmail($to,$name,$tipo,$url)
+    public function precompose($payment_id)
+    {
+        $datos           =   $this->get_info_payment($payment_id);
+        $customer       =   $datos->full_name;
+        $email   =   $datos->email;
+
+        return $this->composeEmail($email,$customer,4,env('URL_WEBSITE'),$payment_id);
+    }
+    public function composeEmail($to,$name,$tipo,$url,$data_id=0)
     {
         require base_path("vendor/autoload.php");
         $mail = new PHPMailer(true);     // Passing `true` enables exceptions
@@ -41,7 +49,7 @@ class MailerController extends Controller
             $mail->setFrom(env('MAIL_FROM_ADDRESS'), 'AA Motors APP');
             $mail->addAddress($to, $name);     //Add a recipient
 
-            $array_setup_email = $this->setup_email($to,$name,$tipo,$url);
+            $array_setup_email = $this->setup_email($to,$name,$tipo,$url,$data_id);
 
             //Content
             $mail->isHTML(true);                                  //Set email format to HTML
@@ -59,7 +67,7 @@ class MailerController extends Controller
 
     }
 
-    private function setup_email($email,$name,$tipo,$url)
+    private function setup_email($email,$name,$tipo,$url,$data_id)
     {
         $array_email = array();
         $subject     = '';
@@ -92,7 +100,21 @@ class MailerController extends Controller
                         'altbody' => 'You have to update your browser. Contact with the ADMIN,'
                     ];
                     break;
+            case 4:
+                    $datos           =   $this->get_info_payment($data_id);
+                    $customer       =   $datos->full_name;
+                    $payment        =   number_format($datos->payment,2,".",",");
+                    $date_payment   =   $datos->date_payment;
+                    $balance        =   number_format($datos->balance,2,".",",");
+                    $url_inventory  =   $url;
 
+                    $array_email =
+                    [
+                        'subject' => 'Thanks for your payment',
+                        'body'    => $this->tmp_get_payment($customer,$payment,$date_payment,$balance,$url_inventory),
+                        'altbody' => 'You have to update your browser. Contact with the ADMIN,'
+                    ];
+                        break;
         }
 
 
@@ -448,6 +470,120 @@ class MailerController extends Controller
         $template_savepass_final   = str_replace(array('{$name_user}','{$email_user}','{$url_login}'),array($name_user,$mail_user,$url_login),$template_savepass_tmp);
 
         return $template_savepass_final;
+    }
+
+
+    private function tmp_get_payment($customer,$payment,$date_payment,$balance,$url_inventory)
+    {
+        $template_get_payment = '<div class="es-wrapper-color" style="background-color:#F6F6F6">
+            <!--[if gte mso 9]>
+			<v:background xmlns:v="urn:schemas-microsoft-com:vml" fill="t">
+				<v:fill type="tile" color="#f6f6f6"></v:fill>
+			</v:background>
+		<![endif]-->
+   <table class="es-wrapper" width="100%" cellspacing="0" cellpadding="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;padding:0;Margin:0;width:100%;height:100%;background-repeat:repeat;background-position:center top">
+     <tr>
+      <td valign="top" style="padding:0;Margin:0">
+       <table cellpadding="0" cellspacing="0" class="es-header" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%;background-color:#F6F6F6;background-repeat:repeat;background-position:center top">
+         <tr>
+          <td align="center" style="padding:0;Margin:0">
+           <table class="es-header-body" align="center" cellpadding="0" cellspacing="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:transparent;width:600px">
+             <tr>
+              <td align="left" style="padding:20px;Margin:0">
+               <table cellpadding="0" cellspacing="0" width="100%" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                 <tr>
+                  <td class="es-m-p0r" valign="top" align="center" style="padding:0;Margin:0;width:560px">
+                   <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                     <tr>
+                      <td align="center" class="es-m-txt-c" style="padding:0;Margin:0;font-size:0px"><a target="_blank" href="https://viewstripo.email" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#1376C8;font-size:14px"><img src="https://i.ibb.co/BVcSR5j/car-logo.png" alt="Logo" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" height="47" title="Logo"></a></td>
+                     </tr>
+                   </table></td>
+                 </tr>
+               </table></td>
+             </tr>
+           </table></td>
+         </tr>
+       </table>
+       <table cellpadding="0" cellspacing="0" class="es-content" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%">
+         <tr>
+          <td align="center" bgcolor="#ffffff" style="padding:0;Margin:0;background-color:#ffffff">
+           <table bgcolor="#ffffff" class="es-content-body" align="center" cellpadding="0" cellspacing="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#ffffff;width:600px">
+             <tr>
+              <td align="left" style="padding:0;Margin:0;padding-bottom:10px;padding-left:20px;padding-right:20px">
+               <table cellpadding="0" cellspacing="0" width="100%" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                 <tr>
+                  <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
+                   <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                     <tr>
+                      <td align="center" style="padding:0;Margin:0;font-size:0px"><a target="_blank" href="https://www.google.com" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#2CB543;font-size:14px"><img class="adapt-img" src="https://i.ibb.co/pzBdQM3/5672606.jpg" alt="Eid al-Adha" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" title="Eid al-Adha" width="560"></a></td>
+                     </tr>
+                     <tr>
+                      <td align="left" style="padding:0;Margin:0;padding-top:5px;padding-bottom:5px"><h1 style="Margin:0;line-height:36px;mso-line-height-rule:exactly;font-family:montserrat, sans-serif;font-size:30px;font-style:normal;font-weight:bold;color:#333333">Thanks for your payment</h1><h1 style="Margin:0;line-height:36px;mso-line-height-rule:exactly;font-family:Montserrat, sans-serif;font-size:30px;font-style:normal;font-weight:bold;color:#333333"><br></h1></td>
+                     </tr>
+                     <tr>
+                      <td align="left" style="padding:0;Margin:0;padding-top:10px;padding-bottom:10px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:montserrat, sans-serif;line-height:19px;color:#333333;font-size:16px">Hello <strong>{$customer}</strong>,<br><br>We hope you are doing well.<br><br>We have received your payment about the car loan that you have with us. Thanks for your business.<br><br>Details about&nbsp;your payment.<br><br></p><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:montserrat, sans-serif;line-height:19px;color:#333333;font-size:16px;text-align:center">- Amount due: <strong>$USD {$payment}</strong><br><br>- Date of payment: <strong>{$date_payment}</strong><br><br>- Balance: <strong>$USD {$balance}</strong></p></td>
+                     </tr>
+                     <tr>
+                      <td align="center" class="es-m-p15b" style="Margin:0;padding-top:10px;padding-left:15px;padding-right:15px;padding-bottom:20px"><span class="es-button-border" style="border-style:solid;border-color:#2CB543;background:#F4B459;border-width:0px;display:inline-block;border-radius:10px;width:auto"><a href="https://{$url_inventory}" class="es-button" target="_blank" style="mso-style-priority:100 !important;text-decoration:none;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;color:#ffffff;font-size:18px;border-style:solid;border-color:#F4B459;border-width:10px 20px 10px 20px;display:inline-block;background:#F4B459;border-radius:10px;font-family:Montserrat, sans-serif;font-weight:normal;font-style:normal;line-height:22px;width:auto;text-align:center">See our inventory</a></span></td>
+                     </tr>
+                   </table></td>
+                 </tr>
+               </table></td>
+             </tr>
+           </table></td>
+         </tr>
+       </table>
+       <table cellpadding="0" cellspacing="0" class="es-content" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%">
+         <tr>
+          <td align="center" style="padding:0;Margin:0">
+           <table bgcolor="#ffffff" class="es-content-body" align="center" cellpadding="0" cellspacing="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#F6F6F6;width:600px">
+             <tr>
+              <td align="left" style="padding:20px;Margin:0">
+               <table cellpadding="0" cellspacing="0" width="100%" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                 <tr>
+                  <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
+                   <table cellpadding="0" cellspacing="0" width="100%" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                     <tr>
+                      <td align="center" style="padding:0;Margin:0;display:none"></td>
+                     </tr>
+                   </table></td>
+                 </tr>
+               </table></td>
+             </tr>
+           </table></td>
+         </tr>
+       </table></td>
+     </tr>
+   </table>
+  </div>';
+        $template_savepayment_tmp       = str_replace('{$body_html}',$template_get_payment,$this->template());
+        $template_savepayment_final     = str_replace(array('{$customer}','{$payment}','{$date_payment}','{$balance}','{$url_inventory}'),array($customer,$payment,$date_payment,$balance,$url_inventory),$template_savepayment_tmp);
+
+        return $template_savepayment_final;
+    }
+
+
+    private function get_info_payment($data_id)
+    {
+        try
+        {
+            $payment  =   DB::table('loans as l')
+            ->join('customers as cus', 'l.customer_id', '=', 'cus.id')
+            ->join('payments_loan as pl', 'pl.loan_id', '=', 'l.id')
+            ->select('pl.monto as payment',DB::raw("CONCAT(cus.first_name,' ',cus.last_name) as full_name"),DB::raw("DATE_FORMAT(pl.date_doit,'%m/%d/%Y') as date_payment"),'pl.balance','cus.email')
+            ->where('pl.id',$data_id)->where('pl.concepto',1)->where('pl.estado',1)
+            ->get();
+
+            if($payment->count())
+            {
+                return $payment[0];
+            }
+        }
+        catch(\Exception $e)
+        {
+            return false;
+        }
+
     }
 
 }

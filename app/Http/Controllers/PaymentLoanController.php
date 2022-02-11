@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use \App\Models\Loan;
 use \App\Models\PaymentLoan;
-use \App\Models\PaymentFee;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
+use App\Http\Controllers\MailerController;
 
 class PaymentLoanController extends Controller
 {
@@ -113,7 +113,7 @@ class PaymentLoanController extends Controller
             $inputs['date_late_fee']                =   $Y_temp.'-'.$m_temp.'-'.$d_temp;
             $operacion                              =   3;
             $input_loan_id                          =   'hid_loan_id_late_fee';
-            $input_email                           =   'hid_email_customer_late_fee';
+            $input_email                           =    'hid_email_customer_late_fee';
         }
 
 
@@ -151,8 +151,8 @@ class PaymentLoanController extends Controller
                 {
                     $new_balance            =   floatval($inputs['txt_balance_balance']) - floatval($inputs['txt_discount_balance']) - floatval($inputs['txt_amount_due_balance']);
 
-                    $data_payment_multi     =
-                    [
+                    PaymentLoan::create
+                    (
                         [
                             'loan_id'       =>  $inputs['hid_loan_id_balance'],
                             'user_id'       =>  $inputs['hid_user_id_balance'],
@@ -162,20 +162,20 @@ class PaymentLoanController extends Controller
                             'date_doit'     =>  $inputs['date_payment_balance'],
                             'forma_pago'    =>  $inputs['rdo_payment_form_balance'],
                             'balance'       =>  floatval($inputs['txt_balance_balance']) - floatval($inputs['txt_discount_balance']),
-                        ],
-                        [
-                            'loan_id'       =>  $inputs['hid_loan_id_balance'],
-                            'user_id'       =>  $inputs['hid_user_id_balance'],
-                            'description'   =>  $inputs['txt_description_balance'],
-                            'concepto'      =>  1,
-                            'monto'         =>  $inputs['txt_amount_due_balance'],
-                            'date_doit'     =>  $inputs['date_payment_balance'],
-                            'forma_pago'    =>  $inputs['rdo_payment_form_balance'],
-                            'balance'       =>  $new_balance,
-                        ],
-                    ];
+                        ]
+                    );
 
-                    $payment_loan           =   PaymentLoan::insert($data_payment_multi);
+
+                    $payment_loan           =   PaymentLoan::create([
+                        'loan_id'       =>  $inputs['hid_loan_id_balance'],
+                        'user_id'       =>  $inputs['hid_user_id_balance'],
+                        'description'   =>  $inputs['txt_description_balance'],
+                        'concepto'      =>  1,
+                        'monto'         =>  $inputs['txt_amount_due_balance'],
+                        'date_doit'     =>  $inputs['date_payment_balance'],
+                        'forma_pago'    =>  $inputs['rdo_payment_form_balance'],
+                        'balance'       =>  $new_balance,
+                    ]);
 
                     if($new_balance == 0)
                     {
@@ -204,14 +204,14 @@ class PaymentLoanController extends Controller
 
                 if($payment_loan > 0)
                 {
-                    $loan            =   Loan::where('id',$inputs[$input_loan_id])->update(array('balance'=>$new_balance));
-
-                    if(isset($inputs[$input_email]) && !is_null($inputs[$input_email]))
+                    Loan::where('id',$inputs[$input_loan_id])->update(array('balance'=>$new_balance));
+                    if(isset($inputs[$input_email]) && $inputs[$input_email]!= '')
                     {
-
+                        $new_email  =   new MailerController;
+                        $new_email->precompose($payment_loan);
                     }
                     DB::commit();
-                    return \response()->json(['res'=>true,'message'=>config('constants.msg_new_srv'),'balance'=>$new_balance,'bandera_balance'=>$bandera_balance],200);
+                    return \response()->json(['res'=>true,'message'=>config('constants.msg_new_srv'),'balance'=>$new_balance,'bandera_balance'=>$bandera_balance,'correo'=>$inputs[$input_email]],200);
                 }
             }
             else
@@ -220,10 +220,10 @@ class PaymentLoanController extends Controller
                 return \response()->json(['res'=>false,'message'=>$obj_validacion->errors()],200);
             }
         }
-        catch(\Illuminate\Database\QueryException $ex)
+        catch(\Exception $e)
         {
             DB::rollback();
-            return \response()->json(['res'=>false,'message'=>$ex->getMessage()],200);
+            return \response()->json(['res'=>false,'message'=>$e],200);
         }
 
 
@@ -370,5 +370,20 @@ class PaymentLoanController extends Controller
         {
             return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
         }
+    }
+
+    public function sendReceipt($data_id)
+    {
+        try
+        {
+            $new_email  =   new MailerController;
+            $new_email->precompose($data_id);
+            return \response()->json(['res'=>true],200);
+        }
+        catch(\Exception $e)
+        {
+            return \response()->json(['res'=>false],200);
+        }
+
     }
 }

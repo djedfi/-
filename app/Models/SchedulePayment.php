@@ -15,9 +15,7 @@ class SchedulePayment extends Model
         'loan_id',
         'user_id',
         'date_programable',
-        'date_end',
-        'pago_late',
-        'reason_nfee'
+        'date_end'
     ];
 
     protected $hidden = [

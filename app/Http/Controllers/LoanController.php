@@ -13,10 +13,12 @@ use \App\Models\SchedulePayment;
 use \App\Custom\CuotaClass;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
+use \App\Http\Traits\GFunctionsTrait;
 
 
 class LoanController extends Controller
 {
+    use GFunctionsTrait;
     /**
      * Display a listing of the resource.
      *
@@ -214,7 +216,7 @@ class LoanController extends Controller
                     if($car)
                     {
                         DB::commit();
-                        return \response()->json(['res'=>true,'message'=>config('constants.msg_new_srv')],200);
+                        return \response()->json(['res'=>true,'message'=>config('constants.msg_new_srv'),'loan_id'=>$loan_id],200);
                     }
                     else
                     {
@@ -369,18 +371,33 @@ class LoanController extends Controller
                         ->select('l.id as loan_id',DB::raw("CONCAT(cust.first_name,' ',cust.last_name) as full_name"),'cust.birthday',DB::raw("CONCAT(mk.name,' ',md.name,' ',tr.name) as modelo_car"),'cr.stock_number','cr.vin','l.minimun_payment','l.loan_date','sc.id','l.pago_automatico','sc.date_programable')
                         ->where('sc.date_programable', '=', Carbon::now()->format('Y-m-d'))
                         ->get();
-                $data= json_decode($loan, true);
-                $array_id_loan =array();
-                foreach($data as $key => $qs)
+
+                if($loan->count())
                 {
-                    $payment = PaymentLoan::where('loan_id',$qs['loan_id'])->where('date_doit',$qs['date_programable'])->count();
-                    if($payment == 0)
+                    $data= json_decode($loan, true);
+                    $array_id_loan =array();
+                    foreach($data as $key => $qs)
                     {
-                        array_push($array_id_loan,$qs);
+                        if(!$this->checkpayment($qs['loan_id'],$qs['date_programable'],$qs['date_programable']))
+                        {
+                            array_push($array_id_loan,$qs);
+                        }
                     }
 
+                    if(count($array_id_loan) > 0)
+                    {
+                        return \response()->json(['res'=>true,'data'=>$array_id_loan],200);
+                    }
+                    else
+                    {
+                        return \response()->json(['res'=>true,'data'=>[]],200);
+                    }
                 }
-                return \response()->json(['res'=>true,'data'=>$array_id_loan],200);
+                else
+                {
+                    return \response()->json(['res'=>true,'data'=>[]],200);
+                }
+
             }
             //reporte de los lons que despues del plazo de gracia para pagar, aun no se han presentado
             else if($tipo == 3)
@@ -395,11 +412,35 @@ class LoanController extends Controller
                         ->select('l.id as loan_id',DB::raw("CONCAT(cust.first_name,' ',cust.last_name) as full_name"),'cust.birthday',DB::raw("CONCAT(mk.name,' ',md.name,' ',tr.name) as modelo_car"),'cr.stock_number','cr.vin','l.minimun_payment','l.loan_date','sc.id','l.pago_automatico','sc.date_programable','sc.date_end')
                         ->where('sc.date_end', '=', Carbon::now()->format('Y-m-d'))
                         ->get();
-                return \response()->json(['res'=>true,'data'=>$loan],200);
+                if($loan->count())
+                {
+                    $data= json_decode($loan, true);
+                    $array_id_loan =array();
+                    foreach($data as $key => $qs)
+                    {
+                        if(!$this->checkpayment($qs['loan_id'],$qs['date_programable'],$qs['date_end']))
+                        {
+                            array_push($array_id_loan,$qs);
+                        }
+                    }
+                    if(count($array_id_loan) > 0)
+                    {
+                        return \response()->json(['res'=>true,'data'=>$array_id_loan],200);
+                    }
+                    else
+                    {
+                        return \response()->json(['res'=>true,'data'=>[]],200);
+                    }
+
+                }
+                else
+                {
+                    return \response()->json(['res'=>true,'data'=>[]],200);
+                }
             }
             else
             {
-                return \response()->json(['res'=>true,'message'=>config('constants.msg_no_existe_srv')],200);
+                return \response()->json(['res'=>true,'message'=>config('constants.msg_no_existe_srv'),'data'=>[]],200);
             }
 
             if($loan->count())
@@ -413,7 +454,9 @@ class LoanController extends Controller
         }
         catch(\Exception $e)
         {
-            return \response()->json(['res'=>false,'message'=>$e],200);
+            return \response()->json(['res'=>false,'message'=>$e,'data'=>[]],200);
         }
     }
+
+
 }

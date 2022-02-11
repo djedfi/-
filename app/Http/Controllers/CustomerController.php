@@ -186,10 +186,10 @@ class CustomerController extends Controller
             'txt_init_cus_upd'              =>      'nullable|max:4',
             'txt_lname_cus_upd'             =>      'required|max:250',
             'txt_mobile_cus_upd'            =>      'required|max:10',
-            'txt_email_cus_upd'             =>      'required|string|max:150|unique:customers,email,'.$id,
-            'txt_dlicense_cus_upd'          =>      'required|string|max:15|unique:customers,license,'.$id,
-            'slc_statelic_cus_upd'          =>      'required|string|max:45',
-            'txt_bday_cus_upd'              =>      'required|date_format:m/d/Y',
+            'txt_email_cus_upd'             =>      'nullable|string|max:150|unique:customers,email,'.$id,
+            'txt_dlicense_cus_upd'          =>      'nullable|string|max:15|unique:customers,license,'.$id,
+            'slc_statelic_cus_upd'          =>      'nullable|string|max:45',
+            'txt_bday_cus_upd'              =>      'nullable|date_format:m/d/Y',
             'txt_paddress_cus_upd'          =>      'required|max:250',
             'txt_saddress_cus_upd'          =>      'nullable|max:150',
             'txt_city_cus_upd'              =>      'required|max:100',
@@ -211,7 +211,10 @@ class CustomerController extends Controller
 
             if(!$obj_validacion->fails())
             {
-                list($m_temp,$d_temp,$Y_temp)      =   explode('/',$inputs['txt_bday_cus_upd']);
+                if(!is_null($inputs['txt_bday_cus_upd']))
+                {
+                    list($m_temp,$d_temp,$Y_temp)      =   explode('/',$inputs['txt_bday_cus_upd']);
+                }
                 $customer   =   Customer::find($id);
 
                 if($customer->id == $id)
@@ -230,7 +233,7 @@ class CustomerController extends Controller
                     $input_f['telephone_bus']   = $inputs['txt_business_cus_upd'];
                     $input_f['cellphone']       = $inputs['txt_mobile_cus_upd'];
                     $input_f['email']           = Str::of($inputs['txt_email_cus_upd'])->lower();
-                    $input_f['birthday']        = $Y_temp.'-'.$m_temp.'-'.$d_temp;
+                    $input_f['birthday']        = is_null($inputs['txt_bday_cus_upd']) ? NULL : $Y_temp.'-'.$m_temp.'-'.$d_temp;
                     $input_f['gender']          = $inputs['slc_gender_cus_upd'];
                     $update_customer            = $customer->update($input_f);
 
