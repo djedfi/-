@@ -31,7 +31,7 @@ class CustomerController extends Controller
         }
         catch(\Exception $e)
         {
-            return \response()->json(['res'=>false,'message'=>$e],200);
+            return \response()->json(['res'=>false,'data'=>[],'message'=>$e],200);
         }
     }
 
@@ -162,12 +162,12 @@ class CustomerController extends Controller
             }
             else
             {
-                return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_no_existe_srv')],200);
+                return \response()->json(['res'=>false,'datos'=>[],'message'=>config('constants.msg_no_existe_srv')],200);
             }
         }
         catch(\Exception $e)
         {
-            return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+            return \response()->json(['res'=>false,'datos'=>[],'message'=>config('constants.msg_error_srv')],200);
         }
     }
 

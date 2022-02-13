@@ -35,12 +35,12 @@ class LoanController extends Controller
             }
             else
             {
-                return \response()->json(['res'=>false,'message'=>config('constants.msg_empty')],200);
+                return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_empty')],200);
             }
         }
         catch(\Exception $e)
         {
-            return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+            return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_error_srv')],200);
         }
     }
 
@@ -261,12 +261,12 @@ class LoanController extends Controller
             }
             else
             {
-                return \response()->json(['res'=>false,'message'=>config('constants.msg_no_existe_srv')],200);
+                return \response()->json(['res'=>false,'datos'=>[],'message'=>config('constants.msg_no_existe_srv')],200);
             }
         }
         catch(\Exception $e)
         {
-            return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+            return \response()->json(['res'=>false,'datos'=>[],'message'=>config('constants.msg_error_srv')],200);
         }
     }
 
@@ -280,6 +280,46 @@ class LoanController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $rules = [
+            'txt_fee_late_tab_loan'       =>        'required|regex:/^\d+(\.\d{1,2})?$/',
+        ];
+        try
+        {
+            $inputs                 =   $request->all();
+            $inputs['txt_fee_late_tab_loan']         =   str_replace(array('US$ ',','),array('',''),$inputs['txt_fee_late_tab_loan']);
+            $obj_validacion         = Validator::make($inputs,$rules);
+
+            if(!$obj_validacion->fails())
+            {
+                $loan                =   Loan::where('id',$id)
+                                        ->update(
+                                            array(
+                                                'late_fee'        =>$inputs['txt_fee_late_tab_loan']
+                                            )
+                                        );
+
+                if($loan)
+                {
+                    DB::commit();
+                    return \response()->json(['res'=>true,'message'=>config('constants.msg_ok_srv'),'fee'=>$inputs['txt_fee_late_tab_loan']],200);
+                }
+                else
+                {
+                    DB::rollback();
+                    return \response()->json(['res'=>false,'message'=>config('constants.msg_error_operacion_srv')],200);
+                }
+            }
+            else
+            {
+                DB::rollback();
+                return \response()->json(['res'=>false,'message'=>$obj_validacion->errors()],200);
+            }
+        }
+        catch(\Exception $e)
+        {
+            DB::rollback();
+            return \response()->json(['res'=>false,'message'=>$e],200);
+        }
     }
 
     /**

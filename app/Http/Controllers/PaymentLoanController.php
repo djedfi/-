@@ -29,12 +29,12 @@ class PaymentLoanController extends Controller
             }
             else
             {
-                return \response()->json(['res'=>false,'message'=>config('constants.msg_empty')],200);
+                return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_empty')],200);
             }
         }
         catch(\Exception $e)
         {
-            return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+            return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_error_srv')],200);
         }
     }
 
@@ -176,7 +176,7 @@ class PaymentLoanController extends Controller
                         'forma_pago'    =>  $inputs['rdo_payment_form_balance'],
                         'balance'       =>  $new_balance,
                     ]);
-
+                    $payment_loan           = $payment_loan->id;
                     if($new_balance == 0)
                     {
                         $bandera_balance = 1;
@@ -211,7 +211,7 @@ class PaymentLoanController extends Controller
                         $new_email->precompose($payment_loan);
                     }
                     DB::commit();
-                    return \response()->json(['res'=>true,'message'=>config('constants.msg_new_srv'),'balance'=>$new_balance,'bandera_balance'=>$bandera_balance,'correo'=>$inputs[$input_email]],200);
+                    return \response()->json(['res'=>true,'message'=>config('constants.msg_new_srv'),'balance'=>$new_balance,'bandera_balance'=>$bandera_balance,'correo'=>isset($inputs[$input_email]) ? $inputs[$input_email] : ''],200);
                 }
             }
             else
@@ -220,10 +220,11 @@ class PaymentLoanController extends Controller
                 return \response()->json(['res'=>false,'message'=>$obj_validacion->errors()],200);
             }
         }
-        catch(\Exception $e)
+        catch(\Illuminate\Database\QueryException $ex)
+        //catch(\Exception $e)
         {
             DB::rollback();
-            return \response()->json(['res'=>false,'message'=>$e],200);
+            return \response()->json(['res'=>false,'message'=>$ex->getMessage()],200);
         }
 
 
@@ -248,12 +249,12 @@ class PaymentLoanController extends Controller
             }
             else
             {
-                return \response()->json(['res'=>false,'message'=>config('constants.msg_no_existe_srv')],200);
+                return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_no_existe_srv')],200);
             }
         }
         catch(\Exception $e)
         {
-            return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+            return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_error_srv')],200);
         }
     }
 
@@ -368,7 +369,7 @@ class PaymentLoanController extends Controller
         }
         catch(\Exception $e)
         {
-            return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+            return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_error_srv')],200);
         }
     }
 

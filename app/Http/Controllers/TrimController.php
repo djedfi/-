@@ -29,12 +29,12 @@ class TrimController extends Controller
             }
             else
             {
-                return \response()->json(['res'=>false,'message'=>config('constants.msg_empty')],200);
+                return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_empty')],200);
             }
         }
         catch(\Exception $e)
         {
-            return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+            return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_error_srv')],200);
         }
     }
 
@@ -102,12 +102,12 @@ class TrimController extends Controller
             }
             else
             {
-                return \response()->json(['res'=>true,'message'=>config('constants.msg_no_existe_srv')],200);
+                return \response()->json(['res'=>true,'datos'=>[],'message'=>config('constants.msg_no_existe_srv')],200);
             }
         }
         catch(\Exception $e)
         {
-            return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+            return \response()->json(['res'=>false,'datos'=>[],'message'=>config('constants.msg_error_srv')],200);
         }
     }
 
@@ -130,12 +130,12 @@ class TrimController extends Controller
             }
             else
             {
-                return \response()->json(['res'=>false,'message'=>config('constants.msg_no_existe_srv')],200);
+                return \response()->json(['res'=>false,'datos'=>[],'message'=>config('constants.msg_no_existe_srv')],200);
             }
         }
         catch(\Exception $e)
         {
-            return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+            return \response()->json(['res'=>false,'datos'=>[],'message'=>config('constants.msg_error_srv')],200);
         }
     }
 
@@ -250,12 +250,12 @@ class TrimController extends Controller
             }
             else
             {
-                return \response()->json(['res'=>true,'message'=>config('constants.msg_no_existe_srv')],200);
+                return \response()->json(['res'=>true,'data'=>[],'message'=>config('constants.msg_no_existe_srv')],200);
             }
         }
         catch(\Exception $e)
         {
-            return \response()->json(['res'=>false,'message'=>$e],200);
+            return \response()->json(['res'=>false,'data'=>[],'message'=>$e],200);
         }
     }
 }

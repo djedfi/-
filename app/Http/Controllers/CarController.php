@@ -29,7 +29,7 @@ class CarController extends Controller
              }
              else
              {
-                 return \response()->json(['res'=>false,'message'=>config('constants.msg_empty')],200);
+                 return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_empty')],200);
              }
          }
          catch(\Exception $e)
@@ -140,7 +140,7 @@ class CarController extends Controller
             }
             else
             {
-                return \response()->json(['res'=>false,'message'=>config('constants.msg_no_existe_srv')],200);
+                return \response()->json(['res'=>false,'datos'=>[],'message'=>config('constants.msg_no_existe_srv')],200);
             }
         }
         catch(\Exception $e)
@@ -404,7 +404,7 @@ class CarController extends Controller
             }
             else
             {
-                return \response()->json(['res'=>true,'message'=>config('constants.msg_no_existe_srv')],200);
+                return \response()->json(['res'=>true,'data'=>[],'message'=>config('constants.msg_no_existe_srv')],200);
             }
         }
         catch(\Exception $e)

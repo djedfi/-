@@ -127,7 +127,7 @@ class ShedulePaymentController extends Controller
         }
         catch(\Exception $e)
         {
-            return \response()->json(['res'=>false,'message'=>$e],200);
+            return \response()->json(['res'=>false,'data'=>[],'message'=>$e],200);
         }
     }
 }
