@@ -269,7 +269,7 @@ class AuthController extends Controller
         catch(\Exception $e)
         {
             DB::rollback();
-            return \response()->json(['res'=>false,'message'=>$e],200);
+            return \response()->json(['res'=>false,'message'=>'Your token does not exist.'],200);
         }
     }
 

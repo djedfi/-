@@ -220,11 +220,11 @@ class PaymentLoanController extends Controller
                 return \response()->json(['res'=>false,'message'=>$obj_validacion->errors()],200);
             }
         }
-        catch(\Illuminate\Database\QueryException $ex)
-        //catch(\Exception $e)
+        //catch(\Illuminate\Database\QueryException $ex)
+        catch(\Exception $e)
         {
             DB::rollback();
-            return \response()->json(['res'=>false,'message'=>$ex->getMessage()],200);
+            return \response()->json(['res'=>false,'message'=>$e],200);
         }
 
 
