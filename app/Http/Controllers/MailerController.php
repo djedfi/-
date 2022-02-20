@@ -8,6 +8,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MailerController extends Controller
 {
@@ -17,13 +18,18 @@ class MailerController extends Controller
         $datos              =   $this->get_info_payment($payment_id);
         $customer           =   $datos->full_name;
         $email              =   $datos->email;
-
-        if(is_null($email))
+        Log::info($datos->email);
+        if($email == '')
         {
             return false;
         }
+        else
+        {
+            $this->composeEmail($email,$customer,4,env('URL_WEBSITE'),$payment_id);
+            return true;
+        }
 
-        return $this->composeEmail($email,$customer,4,env('URL_WEBSITE'),$payment_id);
+        return false;
     }
     public function composeEmail($to,$name,$tipo,$url,$data_id=0)
     {

@@ -382,13 +382,13 @@ class PaymentLoanController extends Controller
         try
         {
             $new_email  =   new MailerController;
-            if($new_email->precompose($data_id))
+            if(!$new_email->precompose($data_id))
             {
-                return \response()->json(['res'=>true],200);
+                return \response()->json(['res'=>false],200);
             }
             else
             {
-                return \response()->json(['res'=>false],200);
+                return \response()->json(['res'=>true],200);
             }
 
         }
