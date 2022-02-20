@@ -121,7 +121,7 @@ class ModeloController extends Controller
         {
             if(Modelo::where('make_id',$id)->count())
             {
-                $modelo = Modelo::where('make_id',$id)->get();
+                $modelo = Modelo::where('make_id',$id)->orderBy('name','asc')->get();
                 return \response()->json(['res'=>true,'datos'=>$modelo],200);
             }
             else

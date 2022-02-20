@@ -24,7 +24,7 @@ class TrimController extends Controller
         {
             if(count(Trim::all()) > 0)
             {
-                $trims  = Trim::with(['modelo:id,name'])->get();
+                $trims  = Trim::with(['modelo:id,name'])->orderBy('name','asc')->get();
                 return \response()->json(['res'=>true,'data'=>$trims],200);
             }
             else
@@ -125,7 +125,7 @@ class TrimController extends Controller
         {
             if(Trim::where('modelo_id',$id)->count())
             {
-                $trim = Trim::where('modelo_id',$id)->get();
+                $trim = Trim::where('modelo_id',$id)->orderBy('name','asc')->get();
                 return \response()->json(['res'=>true,'datos'=>$trim],200);
             }
             else

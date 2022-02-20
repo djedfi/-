@@ -48,6 +48,7 @@ class PaymentLoanController extends Controller
     {
         $inputs                                     =   $request->all();
         $bandera_balance = 0;
+        $chk_email = '';
         //pago de mensualidad
         if(isset($inputs['hid_loan_id_payment']))
         {
@@ -59,7 +60,7 @@ class PaymentLoanController extends Controller
                 'txt_amount_due_payment'      =>        'required|regex:/^\d+(\.\d{1,2})?$/',
                 'txt_description_payment'     =>        'required|string',
                 'date_payment_get_payment'    =>        'required|date_format:Y-m-d',
-                'rdo_payment_form_get_payment'=>        'required|integer|between:1,4',
+                'scl_payment_form_get_payment'=>        'required|integer|between:1,6',
                 'hid_email_customer_payment'  =>        'nullable|email'
             ];
             $inputs['hid_balance_loan_payment']         =   str_replace(array('US$ ',','),array('',''),$inputs['hid_balance_loan_payment']);
@@ -69,6 +70,7 @@ class PaymentLoanController extends Controller
             $operacion                                  =   1;
             $input_email                                =   'hid_email_customer_payment';
             $input_loan_id                              =   'hid_loan_id_payment';
+            $chk_email                                  =   'chk_send_email_payment';
         }
         //pago del balance
         else if(isset($inputs['hid_loan_id_balance']))
@@ -82,7 +84,7 @@ class PaymentLoanController extends Controller
                 'txt_amount_due_balance'      =>        'required|regex:/^\d+(\.\d{1,2})?$/',
                 'txt_description_balance'     =>        'required|string',
                 'date_payment_balance'        =>        'required|date_format:Y-m-d',
-                'rdo_payment_form_balance'    =>        'required|integer|between:1,4',
+                'scl_payment_form_balance'    =>        'required|integer|between:1,6',
                 'hid_email_customer_balance'  =>        'nullable|email'
             ];
 
@@ -94,6 +96,7 @@ class PaymentLoanController extends Controller
             $operacion                             =   2;
             $input_email                           =   'hid_email_customer_balance';
             $input_loan_id                         =   'hid_loan_id_balance';
+            $chk_email                             =   'chk_send_email_balance';
         }
         else if(isset($inputs['hid_loan_id_late_fee']))
         {
@@ -114,6 +117,7 @@ class PaymentLoanController extends Controller
             $operacion                              =   3;
             $input_loan_id                          =   'hid_loan_id_late_fee';
             $input_email                           =    'hid_email_customer_late_fee';
+            $chk_email                             =    'chk_send_email_late_fee';
         }
 
 
@@ -138,7 +142,7 @@ class PaymentLoanController extends Controller
                         'concepto'              => 1,
                         'monto'                 => $inputs['txt_amount_due_payment'],
                         'date_doit'             => $inputs['date_payment_get_payment'],
-                        'forma_pago'            => $inputs['rdo_payment_form_get_payment'],
+                        'forma_pago'            => $inputs['scl_payment_form_get_payment'],
                         'balance'               => $new_balance
                     ]);
                     $payment_loan           = $payment_loan->id;
@@ -160,7 +164,7 @@ class PaymentLoanController extends Controller
                             'concepto'      =>  1,
                             'monto'         =>  $inputs['txt_discount_balance'],
                             'date_doit'     =>  $inputs['date_payment_balance'],
-                            'forma_pago'    =>  $inputs['rdo_payment_form_balance'],
+                            'forma_pago'    =>  $inputs['scl_payment_form_balance'],
                             'balance'       =>  floatval($inputs['txt_balance_balance']) - floatval($inputs['txt_discount_balance']),
                         ]
                     );
@@ -173,7 +177,7 @@ class PaymentLoanController extends Controller
                         'concepto'      =>  1,
                         'monto'         =>  $inputs['txt_amount_due_balance'],
                         'date_doit'     =>  $inputs['date_payment_balance'],
-                        'forma_pago'    =>  $inputs['rdo_payment_form_balance'],
+                        'forma_pago'    =>  $inputs['scl_payment_form_balance'],
                         'balance'       =>  $new_balance,
                     ]);
                     $payment_loan           = $payment_loan->id;
@@ -205,7 +209,7 @@ class PaymentLoanController extends Controller
                 if($payment_loan > 0)
                 {
                     Loan::where('id',$inputs[$input_loan_id])->update(array('balance'=>$new_balance));
-                    if(isset($inputs[$input_email]) && $inputs[$input_email]!= '')
+                    if(isset($inputs[$chk_email]) && !is_null($inputs[$input_email]))
                     {
                         $new_email  =   new MailerController;
                         $new_email->precompose($payment_loan);
@@ -220,11 +224,11 @@ class PaymentLoanController extends Controller
                 return \response()->json(['res'=>false,'message'=>$obj_validacion->errors()],200);
             }
         }
-        //catch(\Illuminate\Database\QueryException $ex)
-        catch(\Exception $e)
+        catch(\Illuminate\Database\QueryException $ex)
+        //catch(\Exception $e)
         {
             DB::rollback();
-            return \response()->json(['res'=>false,'message'=>$e],200);
+            return \response()->json(['res'=>false,'message'=>$ex->getMessage()],200);
         }
 
 
@@ -378,8 +382,15 @@ class PaymentLoanController extends Controller
         try
         {
             $new_email  =   new MailerController;
-            $new_email->precompose($data_id);
-            return \response()->json(['res'=>true],200);
+            if($new_email->precompose($data_id))
+            {
+                return \response()->json(['res'=>true],200);
+            }
+            else
+            {
+                return \response()->json(['res'=>false],200);
+            }
+
         }
         catch(\Exception $e)
         {

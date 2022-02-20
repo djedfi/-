@@ -14,9 +14,14 @@ class MailerController extends Controller
     //
     public function precompose($payment_id)
     {
-        $datos           =   $this->get_info_payment($payment_id);
-        $customer       =   $datos->full_name;
-        $email   =   $datos->email;
+        $datos              =   $this->get_info_payment($payment_id);
+        $customer           =   $datos->full_name;
+        $email              =   $datos->email;
+
+        if(is_null($email))
+        {
+            return false;
+        }
 
         return $this->composeEmail($email,$customer,4,env('URL_WEBSITE'),$payment_id);
     }
@@ -232,7 +237,7 @@ class MailerController extends Controller
         <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
         <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
         <tr>
-        <td align="center" style="padding:0;Margin:0;font-size:0px"><img class="adapt-img" src="https://i.ibb.co/82Js1HJ/reset-password.jpg" alt="Eid al-Adha" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" title="Eid al-Adha" height="373" width="390"></td>
+        <td align="center" style="padding:0;Margin:0;font-size:0px"><img class="adapt-img" src="https://i.ibb.co/82Js1HJ/reset-password.jpg"  style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" title="Eid al-Adha" height="373" width="390"></td>
         </tr>
         <tr>
         <td align="left" style="padding:0;Margin:0;padding-top:5px;padding-bottom:5px"><h1 style="Margin:0;line-height:36px;mso-line-height-rule:exactly;font-family:Montserrat, sans-serif;font-size:30px;font-style:normal;font-weight:bold;color:#333333">Forgot your password?</h1></td>
@@ -333,7 +338,7 @@ class MailerController extends Controller
         <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
         <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
         <tr>
-        <td align="center" style="padding:0;Margin:0;font-size:0px"><a target="_blank" href="#" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#2CB543;font-size:14px"><img class="adapt-img" src="https://i.ibb.co/PZWzWV8/welcome.jpg" alt="Eid al-Adha" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" title="Eid al-Adha" width="450"></a></td>
+        <td align="center" style="padding:0;Margin:0;font-size:0px"><a target="_blank" href="#" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#2CB543;font-size:14px"><img class="adapt-img" src="https://i.ibb.co/PZWzWV8/welcome.jpg"  style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" title="Eid al-Adha" width="450"></a></td>
         </tr>
         <tr>
         <td align="left" style="padding:0;Margin:0;padding-top:5px;padding-bottom:5px"><h1 style="Margin:0;line-height:36px;mso-line-height-rule:exactly;font-family:montserrat, sans-serif;font-size:30px;font-style:normal;font-weight:bold;color:#333333">Welcome to AA Motors APP</h1><h1 style="Margin:0;line-height:36px;mso-line-height-rule:exactly;font-family:Montserrat, sans-serif;font-size:30px;font-style:normal;font-weight:bold;color:#333333"><br></h1></td>
@@ -424,7 +429,7 @@ class MailerController extends Controller
         <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
         <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
         <tr>
-        <td align="center" style="padding:0;Margin:0;font-size:0px"><a target="_blank" href="#" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#2CB543;font-size:14px"><img class="adapt-img" src="https://i.ibb.co/KcnnVPC/firts-login.jpg" alt="Eid al-Adha" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" title="Eid al-Adha" width="560"></a></td>
+        <td align="center" style="padding:0;Margin:0;font-size:0px"><a target="_blank" href="#" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#2CB543;font-size:14px"><img class="adapt-img" src="https://i.ibb.co/KcnnVPC/firts-login.jpg"  style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" title="Eid al-Adha" width="560"></a></td>
         </tr>
         <tr>
         <td align="left" style="padding:0;Margin:0;padding-top:5px;padding-bottom:5px"><b></b><h1 style="Margin:0;line-height:36px;mso-line-height-rule:exactly;font-family:Montserrat, sans-serif;font-size:30px;font-style:normal;font-weight:bold;color:#333333">Your password has been changed</h1><h1 style="Margin:0;line-height:36px;mso-line-height-rule:exactly;font-family:Montserrat, sans-serif;font-size:30px;font-style:normal;font-weight:bold;color:#333333"><b></b></h1></td>
@@ -515,7 +520,7 @@ class MailerController extends Controller
                   <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                      <tr>
-                      <td align="center" style="padding:0;Margin:0;font-size:0px"><a target="_blank" href="https://www.google.com" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#2CB543;font-size:14px"><img class="adapt-img" src="https://i.ibb.co/pzBdQM3/5672606.jpg" alt="Eid al-Adha" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" title="Eid al-Adha" width="560"></a></td>
+                      <td align="center" style="padding:0;Margin:0;font-size:0px"><a target="_blank" href="https://www.google.com" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#2CB543;font-size:14px"><img class="adapt-img" src="https://i.ibb.co/pzBdQM3/5672606.jpg"  style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" title="Eid al-Adha" width="560"></a></td>
                      </tr>
                      <tr>
                       <td align="left" style="padding:0;Margin:0;padding-top:5px;padding-bottom:5px"><h1 style="Margin:0;line-height:36px;mso-line-height-rule:exactly;font-family:montserrat, sans-serif;font-size:30px;font-style:normal;font-weight:bold;color:#333333">Thanks for your payment</h1><h1 style="Margin:0;line-height:36px;mso-line-height-rule:exactly;font-family:Montserrat, sans-serif;font-size:30px;font-style:normal;font-weight:bold;color:#333333"><br></h1></td>

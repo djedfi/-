@@ -17,6 +17,7 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 
 use App\Http\Controllers\MailerController;
 
@@ -134,6 +135,7 @@ class AuthController extends Controller
                 else
                 {
                     $token = $user->createToken(env('APP_KEY'))->plainTextToken;
+                    Log::info("Hace login el usuario: ".$user." con token ".$token);
                     return \response()->json(['res'=>true,'user'=>$user,'token'=>$token],200);
                 }
             }
@@ -223,6 +225,7 @@ class AuthController extends Controller
                             ]
                     ];
         DB::beginTransaction();
+
         try
         {
             $obj_validacion     = Validator::make($inputs,$rules);

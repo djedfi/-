@@ -20,7 +20,7 @@ class MakeController extends Controller
          {
              if(count(Make::all()) > 0)
              {
-                 return \response()->json(['res'=>true,'data'=>Make::all()],200);
+                 return \response()->json(['res'=>true,'data'=>Make::orderBy('name','asc')->get()],200);
              }
              else
              {

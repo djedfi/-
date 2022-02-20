@@ -58,16 +58,18 @@ class LoanController extends Controller
             'hid_car_id_loan'          =>        'required|exists:App\Models\Car,id',
             'hid_customer_id_loan'     =>        'required|exists:App\Models\Customer,id',
             'txt_price_car_loan'       =>        'required|regex:/^\d+(\.\d{1,2})?$/',
+            'txt_ttfinance_loan'        =>        'required|regex:/^\d+(\.\d{1,2})?$/',
             'txt_dpayment_loan'        =>        'required|regex:/^\d+(\.\d{1,2})?$/',
-            'txt_costo_plate_loan'     =>        'required|regex:/^\d+(\.\d{1,2})?$/',
-            'txt_costo_doc_loan'       =>        'required|regex:/^\d+(\.\d{1,2})?$/',
+            'txt_mpayment_loan'        =>        'required|regex:/^\d+(\.\d{1,2})?$/',
+            // 'txt_costo_plate_loan'     =>        'required|regex:/^\d+(\.\d{1,2})?$/',
+            // 'txt_costo_doc_loan'       =>        'required|regex:/^\d+(\.\d{1,2})?$/',
             'txt_interest_loan'        =>        'nullable',
-            'txt_taxes_loan'           =>        'required',
+            'txt_taxes_loan'           =>        'nullable',
             'txt_long_term_loan'       =>        'required|integer',
             'date_open_loan'           =>        'required|date_format:m/d/Y',
             'date_startpay_loan'       =>        'required|date_format:m/d/Y',
-            'hid_late_fee_loan'        =>        'required|regex:/^\d+(\.\d{1,2})?$/',
-            'hid_days_late_loan'       =>        'required|integer'
+            'txt_late_days_fee_loan'   =>        'required|regex:/^\d+(\.\d{1,2})?$/',
+            'txt_late_days_loan'       =>        'required|integer'
         ];
 
         DB::beginTransaction();
@@ -76,12 +78,16 @@ class LoanController extends Controller
         {
             $inputs                             =   $request->all();
             $inputs['txt_price_car_loan']       =   str_replace(array('US$ ',','),array('',''),$inputs['txt_price_car_loan']);
+            $inputs['txt_ttfinance_loan']       =   str_replace(array('US$ ',','),array('',''),$inputs['txt_ttfinance_loan']);
             $inputs['txt_dpayment_loan']        =   str_replace(array('US$ ',','),array('',''),$inputs['txt_dpayment_loan']);
-            $inputs['txt_costo_plate_loan']     =   str_replace(array('US$ ',','),array('',''),$inputs['txt_costo_plate_loan']);
-            $inputs['txt_costo_doc_loan']       =   str_replace(array('US$ ',','),array('',''),$inputs['txt_costo_doc_loan']);
+            $inputs['txt_mpayment_loan']        =   str_replace(array('US$ ',','),array('',''),$inputs['txt_mpayment_loan']);
+            // $inputs['txt_costo_plate_loan']     =   str_replace(array('US$ ',','),array('',''),$inputs['txt_costo_plate_loan']);
+            // $inputs['txt_costo_doc_loan']       =   str_replace(array('US$ ',','),array('',''),$inputs['txt_costo_doc_loan']);
+            $inputs['txt_costo_plate_loan']     =   0;
+            $inputs['txt_costo_doc_loan']       =   0;
             $inputs['txt_interest_loan']        =   str_replace(array(' %',','),array('',''),$inputs['txt_interest_loan']);
             $inputs['txt_taxes_loan']           =   str_replace(array(' %',','),array('',''),$inputs['txt_taxes_loan']);
-            $inputs['hid_late_fee_loan']        =   str_replace(array('US$ ',','),array('',''),$inputs['hid_late_fee_loan']);
+            $inputs['txt_late_days_fee_loan']   =   str_replace(array('US$ ',','),array('',''),$inputs['txt_late_days_fee_loan']);
 
             $obj_validacion     = Validator::make($inputs,$rules);
 
@@ -95,20 +101,25 @@ class LoanController extends Controller
                     $inputs['txt_interest_loan']       =   0;
                 }
 
-
-                $new_cuota  =   new CuotaClass;
-                $new_cuota->setTasaInteres($inputs['txt_interest_loan']);
-                $new_cuota->setTasaTaxes($inputs['txt_taxes_loan']);
-                $new_cuota->setCostoPlaca($inputs['txt_costo_plate_loan']);
-                $new_cuota->setCostoDocs($inputs['txt_costo_doc_loan']);
-                $new_cuota->setPrecio($inputs['txt_price_car_loan']);
-                $new_cuota->setDownPayment($inputs['txt_dpayment_loan']);
-                $new_cuota->setPeriodos($inputs['txt_long_term_loan']);
+                if($inputs['txt_taxes_loan'] == '')
+                {
+                    $inputs['txt_taxes_loan']       =   0;
+                }
 
 
-                $costo_sdownpayment =   $new_cuota->calcularFinanceND();
-                $valor_financiar    =   $new_cuota->calcularFinance();
-                $pago_mensual       =   $new_cuota->getPagoMensual();
+                // $new_cuota  =   new CuotaClass;
+                // $new_cuota->setTasaInteres($inputs['txt_interest_loan']);
+                // $new_cuota->setTasaTaxes($inputs['txt_taxes_loan']);
+                // $new_cuota->setCostoPlaca($inputs['txt_costo_plate_loan']);
+                // $new_cuota->setCostoDocs($inputs['txt_costo_doc_loan']);
+                // $new_cuota->setPrecio($inputs['txt_price_car_loan']);
+                // $new_cuota->setDownPayment($inputs['txt_dpayment_loan']);
+                // $new_cuota->setPeriodos($inputs['txt_long_term_loan']);
+
+
+                // $costo_sdownpayment =   $new_cuota->calcularFinanceND();
+                // $valor_financiar    =   $new_cuota->calcularFinance();
+                // $pago_mensual       =   $new_cuota->getPagoMensual();
 
 
                 $loan           =   Loan::create
@@ -121,16 +132,16 @@ class LoanController extends Controller
                     'long_term'         => $inputs['txt_long_term_loan'],
                     'interest_rate'     => $inputs['txt_interest_loan'],
                     'taxes_rate'        => $inputs['txt_taxes_loan'],
-                    'minimun_payment'   =>  $pago_mensual,
+                    'minimun_payment'   =>  $inputs['txt_mpayment_loan'] ,
                     'loan_date'         => $Y_opay.'-'.$m_opay.'-'.$d_opay,
                     'start_payment'     => $Y_spay.'-'.$m_spay.'-'.$d_spay,
-                    'late_fee'          => $inputs['hid_late_fee_loan'],
-                    'days_late'         => $inputs['hid_days_late_loan'],
+                    'late_fee'          => $inputs['txt_late_days_fee_loan'],
+                    'days_late'         => $inputs['txt_late_days_loan'],
                     'pago_automatico'   => isset($inputs['chk_auto_payment_loan']) ? 1:0,
                     'pay_documentation' => $inputs['txt_costo_doc_loan'],
                     'pay_placa'         => $inputs['txt_costo_plate_loan'],
-                    'total_financed'    => $valor_financiar,
-                    'balance'           => $valor_financiar
+                    'total_financed'    => $inputs['txt_ttfinance_loan'] ,
+                    'balance'           => number_format(floatval($inputs['txt_ttfinance_loan']) - floatval($inputs['txt_dpayment_loan']),2,'.','')
                 ]);
                 $loan_id        =   $loan->id;
 
@@ -149,7 +160,7 @@ class LoanController extends Controller
                             'monto'                 => 0,
                             'date_doit'             => $Y_opay.'-'.$m_opay.'-'.$d_opay,
                             'forma_pago'            => 4,
-                            'balance'               => $costo_sdownpayment,
+                            'balance'               => $inputs['txt_ttfinance_loan']
                         ],
                         [
                             'loan_id'               => $loan_id,
@@ -159,7 +170,7 @@ class LoanController extends Controller
                             'monto'                 => $inputs['txt_dpayment_loan'],
                             'date_doit'             => $Y_opay.'-'.$m_opay.'-'.$d_opay,
                             'forma_pago'            => 4,
-                            'balance'               => $valor_financiar,
+                            'balance'               => number_format(floatval($inputs['txt_ttfinance_loan']) - floatval($inputs['txt_dpayment_loan']),2,'.','')
                         ]
                     ];
                     //registrar costo financiar sin down payment
@@ -172,14 +183,12 @@ class LoanController extends Controller
 
                     for($i=1;$i<=$numeros_pagos;$i++)
                     {
-
-
                         if($i == 1)
                         {
                             $date_probramable       =   $Y_spay.'-'.$m_spay.'-'.$d_spay;
                             unset($dt);
                             $dt                     =    Carbon::create($Y_spay, $m_spay, $d_spay, 0);
-                            $date_ultimo            =    $dt->addDays($inputs['hid_days_late_loan']);
+                            $date_ultimo            =    $dt->addDays($inputs['txt_late_days_loan']);
 
                         }
                         else
@@ -195,7 +204,7 @@ class LoanController extends Controller
 
                             list($Y_dp,$m_dp,$d_dp)      =   explode('-',$fecha_programable[0]);
                             $dt3                     =    Carbon::create($Y_dp, $m_dp, $d_dp, 0);
-                            $date_ultimo             =    $dt3->addDays($inputs['hid_days_late_loan']);
+                            $date_ultimo             =    $dt3->addDays($inputs['txt_late_days_loan']);
                         }
 
                         $schedule_pay                =   SchedulePayment::create
@@ -236,10 +245,11 @@ class LoanController extends Controller
                 return \response()->json(['res'=>false,'message'=>$obj_validacion->errors()],200);
             }
         }
-        catch(\Exception $e)
+        //catch(\Exception $e)
+        catch(\Illuminate\Database\QueryException $ex)
         {
             DB::rollback();
-            return \response()->json(['res'=>false,'message'=>config('constants.msg_error_srv')],200);
+            return \response()->json(['res'=>false,'message'=>$ex->getMessage()],200);
         }
     }
 
@@ -291,17 +301,31 @@ class LoanController extends Controller
 
             if(!$obj_validacion->fails())
             {
+
+                if($inputs['txt_interest_tab_loan'] == '')
+                {
+                    $inputs['txt_interest_tab_loan']       =   0;
+                }
+
+                if($inputs['txt_taxes_tab_loan'] == '')
+                {
+                    $inputs['txt_taxes_tab_loan']       =   0;
+                }
+
                 $loan                =   Loan::where('id',$id)
                                         ->update(
                                             array(
-                                                'late_fee'        =>$inputs['txt_fee_late_tab_loan']
+                                                'late_fee'          =>$inputs['txt_fee_late_tab_loan'],
+                                                'interest_rate'     => $inputs['txt_interest_tab_loan'],
+                                                'taxes_rate'        => $inputs['txt_taxes_tab_loan'],
+                                                'pago_automatico'   => isset($inputs['chk_auto_payment_tab_loan']) ? 1:0,
                                             )
                                         );
 
                 if($loan)
                 {
                     DB::commit();
-                    return \response()->json(['res'=>true,'message'=>config('constants.msg_ok_srv'),'fee'=>$inputs['txt_fee_late_tab_loan']],200);
+                    return \response()->json(['res'=>true,'message'=>config('constants.msg_ok_srv'),'fee'=>$inputs['txt_fee_late_tab_loan'],'pago_automatico'   => isset($inputs['chk_auto_payment_tab_loan']) ? 1:0],200);
                 }
                 else
                 {
