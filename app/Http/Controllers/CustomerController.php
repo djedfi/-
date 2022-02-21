@@ -57,7 +57,7 @@ class CustomerController extends Controller
             'txt_saddress_cus'          =>      'nullable|max:150',
             'txt_city_cus'              =>      'required|max:100',
             'slc_state_cus'             =>      'required|exists:App\Models\State,id',
-            'txt_zip_cus'               =>      'required|regex:/^\d{5}$/',
+            'txt_zip_cus'               =>      'required|regex:/^\d{5}(?:[-\s]\d{4})$/',
             'txt_resphone_cus'          =>      'nullable|string|max:20',
             'txt_business_cus'          =>      'nullable|string|max:20',
             'slc_gender_cus'            =>      'required|integer|between:1,3'
@@ -194,7 +194,7 @@ class CustomerController extends Controller
             'txt_saddress_cus_upd'          =>      'nullable|max:150',
             'txt_city_cus_upd'              =>      'required|max:100',
             'slc_state_cus_upd'             =>      'required|exists:App\Models\State,id',
-            'txt_zip_cus_upd'               =>      'required|regex:/^\d{5}$/',
+            'txt_zip_cus_upd'               =>      'required|regex:/^\d{5}(?:[-\s]\d{4})$/',
             'txt_resphone_cus_upd'          =>      'nullable|string|max:20',
             'txt_business_cus_upd'          =>      'nullable|string|max:20',
             'slc_gender_cus_upd'            =>      'required|integer|between:1,3'
