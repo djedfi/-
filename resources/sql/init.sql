@@ -13,11 +13,8 @@ INSERT INTO `db_autos`.`options_app` (`name`, `description`, `path_option`, `gro
 INSERT INTO `db_autos`.`options_app` (`name`, `description`, `path_option`, `group_option`, `icono`) VALUES ('Customer', 'CRUD Customer', 'customer', '2','fa-users');
 INSERT INTO `db_autos`.`options_app` (`name`, `description`, `path_option`, `group_option`, `icono`) VALUES ('Car Loans', 'CRUD Sales', 'loan', '2','fa-university');
 
-INSERT INTO `db_autos`.`states` (`name`) VALUES ('California');
-INSERT INTO `db_autos`.`states` (`name`) VALUES ('Florida');
-INSERT INTO `db_autos`.`states` (`name`) VALUES ('Alaska');
-
 INSERT INTO `users` (`id`,`branch_id`, `first_name`, `last_name`, `email`, `cargo`,`email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES(1,1, 'Edwin', 'Figueroa', 'edwin@gmail.com', 'Gerente',NULL, '$2y$10$gRSW26vzbFjm9gZJjTNY8.HdZhaWj0zhiZ5K3n4HUe/l6ZQp063yS', NULL, '2022-01-13 23:12:34', '2022-01-13 23:12:34');
+INSERT INTO `users` (`id`,`branch_id`, `first_name`, `last_name`, `email`, `cargo`,`email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES(2,1, 'Operaciones', 'Automaticas', 'info@aamotorsla.com', 'Operador',NULL, '$2y$10$gRSW26vzbFjm9gZJjTNY8.HdZhaWj0zhiZ5K3n4HUe/l6ZQp063yS', NULL, '2022-01-13 23:12:34', '2022-01-13 23:12:34');
 
 INSERT INTO `user_optios`(`user_id`, `option_id`) values (1,1);
 INSERT INTO `user_optios`(`user_id`, `option_id`) values (1,2);
