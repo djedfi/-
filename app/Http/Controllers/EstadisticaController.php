@@ -113,7 +113,7 @@ class EstadisticaController extends Controller
         ->join('modelos as md', 'md.id', '=', 'tr.modelo_id')
         ->join('makes as mk', 'mk.id', '=', 'make_id')
         ->join('schedule_payments as sc', 'sc.loan_id', '=', 'l.id')
-        ->select('l.id as loan_id',DB::raw("CONCAT(cust.first_name,' ',cust.last_name) as full_name"),DB::raw("CONCAT(mk.name,' ',md.name,' ',tr.name) as modelo_car"),'cr.vin','l.minimun_payment','l.pago_automatico','sc.date_programable')
+        ->select('l.id as loan_id',DB::raw("CONCAT(cust.first_name,' ',cust.last_name) as full_name"),DB::raw("CONCAT(mk.name,' ',md.name,' ',tr.name) as modelo_car"),'cr.vin','l.minimun_payment','l.pago_automatico','sc.date_programable','sc.date_end')
         ->where('sc.date_programable', '=', Carbon::now()->format('Y-m-d'))
         ->get();
 
@@ -123,7 +123,7 @@ class EstadisticaController extends Controller
             $array_id_loan =array();
             foreach($data as $key => $qs)
             {
-                if(!$this->checkpayment($qs['loan_id'],$qs['date_programable'],$qs['date_programable']))
+                if(!$this->checkpayment($qs['loan_id'],$qs['date_programable'],$qs['date_end']))
                 {
                     $qs['color']            =   $array_color[rand(0,$total_colores)];
                     $qs['minimun_payment']  =   number_format($qs['minimun_payment'],2,".",",");
