@@ -139,7 +139,7 @@ class PaymentLoanController extends Controller
                         'loan_id'               => $inputs['hid_loan_id_payment'],
                         'user_id'               => $inputs['hid_user_id_payment'],
                         'description'           => $inputs['txt_description_payment'],
-                        'concepto'              => 1,
+                        'concepto'              => 3,
                         'monto'                 => $inputs['txt_amount_due_payment'],
                         'date_doit'             => $inputs['date_payment_get_payment'],
                         'forma_pago'            => $inputs['scl_payment_form_get_payment'],
@@ -161,7 +161,7 @@ class PaymentLoanController extends Controller
                             'loan_id'       =>  $inputs['hid_loan_id_balance'],
                             'user_id'       =>  $inputs['hid_user_id_balance'],
                             'description'   =>  'Discount of the interest for paying the balance',
-                            'concepto'      =>  1,
+                            'concepto'      =>  5,
                             'monto'         =>  $inputs['txt_discount_balance'],
                             'date_doit'     =>  $inputs['date_payment_balance'],
                             'forma_pago'    =>  $inputs['scl_payment_form_balance'],
@@ -174,7 +174,7 @@ class PaymentLoanController extends Controller
                         'loan_id'       =>  $inputs['hid_loan_id_balance'],
                         'user_id'       =>  $inputs['hid_user_id_balance'],
                         'description'   =>  $inputs['txt_description_balance'],
-                        'concepto'      =>  1,
+                        'concepto'      =>  3,
                         'monto'         =>  $inputs['txt_amount_due_balance'],
                         'date_doit'     =>  $inputs['date_payment_balance'],
                         'forma_pago'    =>  $inputs['scl_payment_form_balance'],
@@ -194,7 +194,7 @@ class PaymentLoanController extends Controller
                         'loan_id'               => $inputs['hid_loan_id_late_fee'],
                         'user_id'               => $inputs['hid_user_id_late_fee'],
                         'description'           => $inputs['txt_description_late_fee'],
-                        'concepto'              => 2,
+                        'concepto'              => 4,
                         'monto'                 => $inputs['txt_amount_late_fee'],
                         'date_doit'             => $inputs['date_late_fee'],
                         'balance'               => $new_balance
@@ -301,7 +301,16 @@ class PaymentLoanController extends Controller
 
                 if($payment)
                 {
-                    $new_balance            =   floatval($inputs['hid_balance_delete_late_fee']) - floatval($inputs['hid_fee_late_delete_late_fee']);
+                    if($inputs['hid_operacion_delete_late_fee'] == 1)
+                    {
+                        $new_balance            =   floatval($inputs['hid_balance_delete_late_fee']) - floatval($inputs['hid_fee_late_delete_late_fee']);
+                    }
+                    else if($inputs['hid_operacion_delete_late_fee'] == 2)
+                    {
+                        $new_balance            =   floatval($inputs['hid_balance_delete_late_fee']) + floatval($inputs['hid_fee_late_delete_late_fee']);
+                    }
+
+
                     Loan::where('id',$inputs['hid_loan_id_delete_late_fee'])
                                         ->update(
                                             array(
@@ -323,10 +332,6 @@ class PaymentLoanController extends Controller
                 DB::rollback();
                 return \response()->json(['res'=>false,'message'=>$obj_validacion->errors()],200);
             }
-
-
-
-
         }
         catch(\Exception $e)
         {
@@ -335,6 +340,64 @@ class PaymentLoanController extends Controller
         }
     }
 
+
+    public function UpdPayment(Request $request, $id)
+    {
+        $rules = [
+            'hid_user_id_upd_payment'           =>        'required|exists:App\Models\User,id',
+            'txt_description_upd_payment'       =>        'required|string',
+            'date_payment_upd_payment'          =>        'required|date_format:Y-m-d',
+            'scl_payment_upd_payment'           =>        'required|integer|between:1,6'
+        ];
+
+        DB::beginTransaction();
+
+        try
+        {
+            $inputs                 =   $request->all();
+
+            list($m_temp,$d_temp,$Y_temp)          =   explode('/',$inputs['date_payment_upd_payment']);
+            $inputs['date_payment_upd_payment']        =   $Y_temp.'-'.$m_temp.'-'.$d_temp;
+
+            $obj_validacion         = Validator::make($inputs,$rules);
+
+            if(!$obj_validacion->fails())
+            {
+
+
+                $payment                =   PaymentLoan::where('id',$id)
+                                        ->update(
+                                            array(
+                                                'description'       =>$inputs['txt_description_upd_payment'],
+                                                'date_doit'         =>$inputs['date_payment_upd_payment'],
+                                                'forma_pago'        =>$inputs['scl_payment_upd_payment'],
+                                                'user_id'           =>$inputs['hid_user_id_upd_payment']
+                                            )
+                                        );
+
+                if($payment)
+                {
+                    DB::commit();
+                    return \response()->json(['res'=>true,'message'=>config('constants.msg_ok_srv')],200);
+                }
+                else
+                {
+                    DB::rollback();
+                    return \response()->json(['res'=>false,'message'=>config('constants.msg_error_operacion_srv')],200);
+                }
+            }
+            else
+            {
+                DB::rollback();
+                return \response()->json(['res'=>false,'message'=>$obj_validacion->errors()],200);
+            }
+        }
+        catch(\Exception $e)
+        {
+            DB::rollback();
+            return \response()->json(['res'=>false,'message'=>$e->getMessage()],200);
+        }
+    }
     /**
      * Remove the specified resource from storage.
      *

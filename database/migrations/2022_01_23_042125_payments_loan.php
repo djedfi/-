@@ -35,8 +35,8 @@ class PaymentsLoan extends Migration
 
         //1=tarjeta de debito; 2= tarjeta de credito; 3=cheque; 4= cash; 5=zelle; 6=deposit account
         DB::statement('ALTER TABLE payments_loan ADD CONSTRAINT chk_forma_pago CHECK (forma_pago between 1 and 6);');
-        //1=payment of the loan (-); 2=late fee (+)
-        DB::statement('ALTER TABLE payments_loan ADD CONSTRAINT chk_concepto_payment CHECK (concepto between 1 and 2);');
+        //1=pago que se va a financiar; 2=pago de downpayment; 3=payment of the loan (-); 4=late fee (+);5=discount for pay the balance
+        DB::statement('ALTER TABLE payments_loan ADD CONSTRAINT chk_concepto_payment CHECK (concepto between 1 and 4);');
     }
 
     /**

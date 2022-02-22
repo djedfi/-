@@ -89,7 +89,7 @@ class EstadisticaController extends Controller
             $first_day_year     =   $today->startOfYear()->format('Y-m-d H:i:s');
             $last_day_year      =   $today->endOfYear()->format('Y-m-d H:i:s');
 
-            $total_monto_payments_year      =   PaymentLoan::where('concepto',1)->where('estado',1)->whereBetween('date_doit',[$first_day_year,$last_day_year])->sum('monto');
+            $total_monto_payments_year      =   PaymentLoan::where('concepto',3)->where('estado',1)->whereBetween('date_doit',[$first_day_year,$last_day_year])->sum('monto');
             $total_payment_today             =   SchedulePayment::whereBetween('date_programable',[$today->format('Y-m-d').' 00:00:00',$today->format('Y-m-d').' 23:59:59'])->get()->count();
             $total_payment_week            =   SchedulePayment::whereBetween('date_programable',[$first_day_week,$last_day_week])->get()->count();
             $total_payment_month             =   SchedulePayment::whereBetween('date_programable',[$first_day_month,$last_day_month])->get()->count();

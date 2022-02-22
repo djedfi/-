@@ -166,7 +166,7 @@ class LoanController extends Controller
                             'loan_id'               => $loan_id,
                             'user_id'               => $inputs['hid_id_user_loan'],
                             'description'           => 'Pay down payment',
-                            'concepto'              => 1,
+                            'concepto'              => 2,
                             'monto'                 => $inputs['txt_dpayment_loan'],
                             'date_doit'             => $Y_opay.'-'.$m_opay.'-'.$d_opay,
                             'forma_pago'            => 4,

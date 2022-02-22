@@ -83,6 +83,7 @@ Route::group(['middleware'=>['auth:sanctum']],function()
     Route::resource("payments", PaymentLoanController::class);
     Route::get("getLastPaymentbyLoad/{id}",[App\Http\Controllers\PaymentLoanController::class,'getLastPaymentbyLoad']);
     Route::get("sendReceipt/{id}",[App\Http\Controllers\PaymentLoanController::class,'sendReceipt']);
+    Route::post("updatePayment/{id}",[App\Http\Controllers\PaymentLoanController::class,'UpdPayment']);
 
     Route::get("getReporteSchedule/{id}",[ShedulePaymentController::class,'getReporteSchedule']);
 
