@@ -72,7 +72,7 @@ class LateFeeCron extends Command
                         'loan_id'               => $qs['loan_id'],
                         'user_id'               => 2,
                         'description'           => 'Automatic Late Fee',
-                        'concepto'              => 2,
+                        'concepto'              => 4,
                         'monto'                 => $qs['late_fee'],
                         'date_doit'             => $today,
                         'balance'               => floatval($qs['balance']) + floatval($qs['late_fee'])

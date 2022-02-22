@@ -582,7 +582,9 @@ class MailerController extends Controller
             ->join('customers as cus', 'l.customer_id', '=', 'cus.id')
             ->join('payments_loan as pl', 'pl.loan_id', '=', 'l.id')
             ->select('pl.monto as payment',DB::raw("CONCAT(cus.first_name,' ',cus.last_name) as full_name"),DB::raw("DATE_FORMAT(pl.date_doit,'%m/%d/%Y') as date_payment"),'pl.balance','cus.email')
-            ->where('pl.id',$data_id)->where('pl.concepto',1)->where('pl.estado',1)
+            ->where('pl.id',$data_id)
+            ->whereIn('pl.concepto', [2, 3])
+            ->where('pl.estado',1)
             ->get();
 
             if($payment->count())
