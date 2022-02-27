@@ -81,7 +81,7 @@ class AuthController extends Controller
 
                     $new_email  =   new MailerController;
 
-                    $new_email->composeEmail($user_email,$user_name,3,env('APP_URL').'/frontend-auto/?mod=create_password&token='.$url_token);
+                    $new_email->composeEmail($user_email,$user_name,3,env('APP_URL').'/?mod=create_password&token='.$url_token);
                     DB::commit();
                     return \response()->json(['res'=>true,'message'=>config('constants.msg_new_srv')],200);
                 }
@@ -189,7 +189,7 @@ class AuthController extends Controller
 
                     $new_email  =   new MailerController;
 
-                    $new_email->composeEmail($user_email,$user_name,1,env('APP_URL').'/frontend-auto/?mod=reset_password&token='.$url_token);
+                    $new_email->composeEmail($user_email,$user_name,1,env('APP_URL').'/?mod=reset_password&token='.$url_token);
                     DB::commit();
                     return \response()->json(['res'=>true,'message'=>'We have sent an email with the instructions'],200);
                 }
@@ -252,7 +252,7 @@ class AuthController extends Controller
                         $passwordreset->update(array('used_token'=>$user->id));
 
                         $new_email  =   new MailerController;
-                        $new_email->composeEmail($user->email,$user->first_name.' '.$user->last_name,2,env('APP_URL').'/frontend-auto/?mod=login');
+                        $new_email->composeEmail($user->email,$user->first_name.' '.$user->last_name,2,env('APP_URL').'/?mod=login');
                         DB::commit();
                         return \response()->json(['res'=>true,'message'=>'Your password has been updated succesfully.'],200);
                     }

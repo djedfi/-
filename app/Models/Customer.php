@@ -57,6 +57,44 @@ class Customer extends Model
         $this->attributes['last_name'] = strtoupper($value);
     }
 
+    public function setLicenseAttribute($value)
+    {
+        if(is_null($value) || $value == '')
+        {
+            $this->attributes['license'] = NULL;
+        }
+        else
+        {
+            $this->attributes['license'] = $value;
+
+        }
+    }
+
+    public function setEmailAttribute($value)
+    {
+        if(is_null($value) || $value == '')
+        {
+            $this->attributes['email'] = NULL;
+        }
+        else
+        {
+            $this->attributes['email'] = $value;
+        }
+    }
+
+    public function setSsnAttribute($value)
+    {
+        if(is_null($value) || $value == '')
+        {
+            $this->attributes['ssn'] = NULL;
+        }
+        else
+        {
+            $this->attributes['ssn'] = $value;
+
+        }
+    }
+
     public function state()
     {
         return $this->belongsTo(State::class);
