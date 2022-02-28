@@ -105,7 +105,7 @@
             @foreach($loan as $key=>$item)
                 @php
                     $full_name          = $item->name_customer;
-                    $cellphone          = $item->cellphone;
+                    $cellphone          = \Clemdesign\PhpMask\Mask::apply($item->cellphone,"(000) 000-0000");
                     $email              = $item->email;
                     $model_car          = $item->info_car;
                     $vin                = $item->vin;

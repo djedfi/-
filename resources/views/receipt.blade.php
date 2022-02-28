@@ -106,7 +106,7 @@
                     $date_payment       = $item->date_payment;
                     $invoice_number     = 'AAI'.$item->year_payment.$item->payment_id;
                     $full_name          = $item->name_customer;
-                    $cellphone          = $item->cellphone;
+                    $cellphone          = \Clemdesign\PhpMask\Mask::apply($item->cellphone,"(000) 000-0000");
                     $email              = $item->email;
                     $model_car          = $item->info_car;
                     $vin                = $item->vin;

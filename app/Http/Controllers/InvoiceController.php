@@ -4,9 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use \App\Models\Loan;
-use Carbon\Carbon;
-use Carbon\CarbonImmutable;
 use PDF;
 
 class InvoiceController extends Controller
@@ -112,6 +109,7 @@ class InvoiceController extends Controller
                     ->orderBy('created_at', 'asc')
                     ->get();
 
+        //return PDF::loadFile(public_path().'/myfile.html')->save('/path-to/my_stored_file.pdf')->stream('download.pdf');
         $pdf = PDF::loadView('summary',compact('loan','payments','name_company','address_company_p','address_company_s','cellphone_company'));
         return $pdf->download('summary.pdf');
     }
