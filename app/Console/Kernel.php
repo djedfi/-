@@ -18,7 +18,7 @@ class Kernel extends ConsoleKernel
     ];
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('latefee:cron')->hourlyAt(23);
+        $schedule->command('latefee:cron')->dailyAt(23);
     }
 
     /**
