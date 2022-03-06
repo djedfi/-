@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use \App\Models\Make;
 use \App\Models\Modelo;
 use Illuminate\Support\Facades\Validator;
-use Modelos;
+use Illuminate\Support\Facades\DB;
 
 class MakeController extends Controller
 {
@@ -20,31 +20,21 @@ class MakeController extends Controller
          //
          try
          {
-             $makes         =   Make::all();
-             if(count($makes) > 0)
-             {
-                $data           =   json_decode($makes, true);
-                $array_make    =   array();
+            $makes  =   DB::table('makes as mk')
+                        ->leftJoin('modelos as md','md.make_id', '=', 'mk.id')
+                        ->selectRaw('mk.id,mk.name,mk.website,count(md.make_id) as conteo')
+                        ->groupBy('mk.id','mk.name','mk.website')
+                        ->orderBy('mk.name','asc')
+                        ->get();
 
-                foreach($data as $key => $qs)
-                {
-                    if(Modelo::where('make_id',$qs['id'])->count() == 0)
-                    {
-                        $qs['bandera_modelo']      =   false;
-                    }
-                    else
-                    {
-                        $qs['bandera_modelo']      =   true;
-                    }
-
-                    array_push($array_make,$qs);
-                }
-                 return \response()->json(['res'=>true,'data'=>$array_make],200);
-             }
-             else
-             {
-                 return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_empty')],200);
-             }
+            if(count($makes) > 0)
+            {
+            return \response()->json(['res'=>true,'data'=>$makes],200);
+            }
+            else
+            {
+                return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_empty')],200);
+            }
          }
          catch(\Illuminate\Database\QueryException $ex)
          {

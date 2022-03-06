@@ -257,7 +257,9 @@ class TrimController extends Controller
                         ->join('modelos as md','md.make_id', '=', 'mk.id')
                         ->join('trims as tr', 'tr.modelo_id', '=', 'md.id')
                         ->leftJoin('cars as crs','tr.id','=','trim_id')
-                        ->select('mk.id as id_make','crs.id as id_car','md.id as id_modelo','tr.id as id_trim',DB::raw('CONCAT(mk.name, \' \', md.name) as full_name'), 'tr.name as name_trim')
+                        ->selectRaw('mk.id as id_make,md.id as id_modelo,tr.id as id_trim, CONCAT(mk.name, " ", md.name) as full_name,tr.name as name_trim, count(crs.trim_id) as conteo')
+                        ->groupBy('mk.id','md.id','tr.id','md.name','mk.name','tr.name')
+                        ->orderBy('tr.name','asc')
                         ->get();
             }
 
