@@ -52,7 +52,7 @@ class InvoiceController extends Controller
                         ->where('pl.concepto', '=', 3)
                         ->get();
         $pdf = PDF::loadView('receipt',compact('payment','name_company','address_company_p','address_company_s','cellphone_company'));
-        return $pdf->download('receipt.pdf');
+        return $pdf->stream('receipt.pdf');
     }
 
     public function getSummaryLoan($loan_id)
@@ -111,6 +111,6 @@ class InvoiceController extends Controller
 
         //return PDF::loadFile(public_path().'/myfile.html')->save('/path-to/my_stored_file.pdf')->stream('download.pdf');
         $pdf = PDF::loadView('summary',compact('loan','payments','name_company','address_company_p','address_company_s','cellphone_company'));
-        return $pdf->download('summary.pdf');
+        return $pdf->stream('receipt.pdf');
     }
 }

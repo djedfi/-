@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use \App\Models\Make;
+use \App\Models\Modelo;
 use Illuminate\Support\Facades\Validator;
+use Modelos;
 
 class MakeController extends Controller
 {
@@ -18,18 +20,35 @@ class MakeController extends Controller
          //
          try
          {
-             if(count(Make::all()) > 0)
+             $makes         =   Make::all();
+             if(count($makes) > 0)
              {
-                 return \response()->json(['res'=>true,'data'=>Make::orderBy('name','asc')->get()],200);
+                $data           =   json_decode($makes, true);
+                $array_make    =   array();
+
+                foreach($data as $key => $qs)
+                {
+                    if(Modelo::where('make_id',$qs['id'])->count() == 0)
+                    {
+                        $qs['bandera_modelo']      =   false;
+                    }
+                    else
+                    {
+                        $qs['bandera_modelo']      =   true;
+                    }
+
+                    array_push($array_make,$qs);
+                }
+                 return \response()->json(['res'=>true,'data'=>$array_make],200);
              }
              else
              {
                  return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_empty')],200);
              }
          }
-         catch(\Exception $e)
+         catch(\Illuminate\Database\QueryException $ex)
          {
-             return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_error_srv')],200);
+             return \response()->json(['res'=>false,'data'=>[],'message'=>$ex->getMessage()],200);
          }
 
     }
@@ -183,7 +202,7 @@ class MakeController extends Controller
             }
             else
             {
-                return \response()->json(['res'=>true,'message'=>config('constants.msg_error_existe_srv')],200);
+                return \response()->json(['res'=>false,'message'=>config('constants.msg_error_existe_srv')],200);
             }
         }
         catch(\Exception $e)

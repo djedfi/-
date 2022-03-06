@@ -419,7 +419,7 @@ class LoanController extends Controller
                         ->join('trims as tr', 'tr.id', '=', 'cr.trim_id')
                         ->join('modelos as md', 'md.id', '=', 'tr.modelo_id')
                         ->join('makes as mk', 'mk.id', '=', 'make_id')
-                        ->select('l.id as loan_id',DB::raw("CONCAT(cust.first_name,' ',cust.last_name) as full_name"),'cust.birthday',DB::raw("CONCAT(mk.name,' ',md.name,' ',tr.name) as modelo_car"),'cr.stock_number','cr.vin','l.total_financed','l.loan_date','l.pago_automatico','l.balance')
+                        ->select('l.id as loan_id',DB::raw("CONCAT(cust.last_name,', ',cust.first_name) as full_name"),'cust.email',DB::raw("CONCAT(mk.name,' ',md.name,' ',tr.name) as modelo_car"),'cr.stock_number','cr.vin','l.total_financed','l.loan_date','l.pago_automatico','l.balance')
                         ->get();
             }
             //reporte de los loans que se deben presentar a pagar en la fecha que se consulte a pagar
@@ -432,7 +432,7 @@ class LoanController extends Controller
                         ->join('modelos as md', 'md.id', '=', 'tr.modelo_id')
                         ->join('makes as mk', 'mk.id', '=', 'make_id')
                         ->join('schedule_payments as sc', 'sc.loan_id', '=', 'l.id')
-                        ->select('l.id as loan_id',DB::raw("CONCAT(cust.first_name,' ',cust.last_name) as full_name"),'cust.birthday',DB::raw("CONCAT(mk.name,' ',md.name,' ',tr.name) as modelo_car"),'cr.stock_number','cr.vin','l.minimun_payment','l.loan_date','sc.id','l.pago_automatico','sc.date_programable')
+                        ->select('l.id as loan_id',DB::raw("CONCAT(cust.last_name,', ',cust.first_name) as full_name"),'cust.email',DB::raw("CONCAT(mk.name,' ',md.name,' ',tr.name) as modelo_car"),'cr.stock_number','cr.vin','l.minimun_payment','l.loan_date','sc.id','l.pago_automatico','sc.date_programable')
                         ->where('sc.date_programable', '=', Carbon::now()->format('Y-m-d'))
                         ->get();
 
@@ -442,7 +442,8 @@ class LoanController extends Controller
                     $array_id_loan =array();
                     foreach($data as $key => $qs)
                     {
-                        if(!$this->checkpayment($qs['loan_id'],$qs['date_programable'],$qs['date_programable']))
+                        $date_programable      = Carbon::create($qs['date_programable'])->subDay(env('DIAS_GRACIAS_BEFORE'));
+                        if(!$this->checkpayment($qs['loan_id'],$date_programable,$qs['date_programable']))
                         {
                             array_push($array_id_loan,$qs);
                         }
@@ -473,7 +474,7 @@ class LoanController extends Controller
                         ->join('modelos as md', 'md.id', '=', 'tr.modelo_id')
                         ->join('makes as mk', 'mk.id', '=', 'make_id')
                         ->join('schedule_payments as sc', 'sc.loan_id', '=', 'l.id')
-                        ->select('l.id as loan_id',DB::raw("CONCAT(cust.first_name,' ',cust.last_name) as full_name"),'cust.birthday',DB::raw("CONCAT(mk.name,' ',md.name,' ',tr.name) as modelo_car"),'cr.stock_number','cr.vin','l.minimun_payment','l.loan_date','sc.id','l.pago_automatico','sc.date_programable','sc.date_end')
+                        ->select('l.id as loan_id',DB::raw("CONCAT(cust.last_name,', ',cust.first_name) as full_name"),'cust.email',DB::raw("CONCAT(mk.name,' ',md.name,' ',tr.name) as modelo_car"),'cr.stock_number','cr.vin','l.minimun_payment','l.loan_date','sc.id','l.pago_automatico','sc.date_programable','sc.date_end')
                         ->where('sc.date_end', '=', Carbon::now()->format('Y-m-d'))
                         ->get();
                 if($loan->count())
@@ -482,7 +483,8 @@ class LoanController extends Controller
                     $array_id_loan =array();
                     foreach($data as $key => $qs)
                     {
-                        if(!$this->checkpayment($qs['loan_id'],$qs['date_programable'],$qs['date_end']))
+                        $date_programable      = Carbon::create($qs['date_programable'])->subDay(env('DIAS_GRACIAS_BEFORE'));
+                        if(!$this->checkpayment($qs['loan_id'],$date_programable,$qs['date_end']))
                         {
                             array_push($array_id_loan,$qs);
                         }

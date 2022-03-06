@@ -6,7 +6,7 @@ INSERT INTO `branches` (`id`, `company_id`, `name`, `address_p`, `address_s`, `t
 INSERT INTO `options_app` (`name`, `description`, `path_option`, `group_option`, `icono`) VALUES ('Users', 'CRUD Users', 'user', '1','fa-id-card-o');
 INSERT INTO `options_app` (`name`, `description`, `path_option`, `group_option`, `icono`) VALUES ('Makes', 'CRUD Makes', 'make', '1','fa-cubes');
 INSERT INTO `options_app` (`name`, `description`, `path_option`, `group_option`, `icono`) VALUES ('Models', 'CRUD Model', 'model', '1','fa-scribd');
-INSERT INTO `options_app` (`name`, `description`, `path_option`, `group_option`, `icono`) VALUES ('Trims', 'CRUD Trim', 'trim', '1','fa-cogs');
+INSERT INTO `options_app` (`name`, `description`, `path_option`, `group_option`, `icono`) VALUES ('Body Type', 'CRUD Trim', 'trim', '1','fa-cogs');
 INSERT INTO `options_app` (`name`, `description`, `path_option`, `group_option`, `icono`) VALUES ('Styles', 'CRUD Style', 'style', '1','fa-ship');
 INSERT INTO `options_app` (`name`, `description`, `path_option`, `group_option`, `icono`) VALUES ('Config', 'CRUD Config', 'config_app', '1','fa-cog');
 INSERT INTO `options_app` (`name`, `description`, `path_option`, `group_option`, `icono`) VALUES ('Cars', 'CRUD Cars', 'car', '2','fa-car');

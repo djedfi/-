@@ -119,18 +119,18 @@
             @endforeach
         @elseif (count($payment) === 0)
             @php
-            $date_payment       = 'NO DATA';
-            $invoice_number     = 'NO DATA';
-            $full_name          = 'NO DATA';
-            $cellphone          = 'NO DATA';
-            $email              = 'NO DATA';
-            $model_car          = 'NO DATA';
-            $vin                = 'NO DATA';
-            $year               = 'NO DATA';
-            $lbl_method_payment = 'NO DATA';
-            $description        = 'NO DATA';
-            $monto              = 'NO DATA';
-            $balance            = 'NO DATA';
+                $date_payment       = 'NO DATA';
+                $invoice_number     = 'NO DATA';
+                $full_name          = 'NO DATA';
+                $cellphone          = 'NO DATA';
+                $email              = 'NO DATA';
+                $model_car          = 'NO DATA';
+                $vin                = 'NO DATA';
+                $year               = 'NO DATA';
+                $lbl_method_payment = 'NO DATA';
+                $description        = 'NO DATA';
+                $monto              = 'NO DATA';
+                $balance            = 'NO DATA';
             @endphp
         @endif
 

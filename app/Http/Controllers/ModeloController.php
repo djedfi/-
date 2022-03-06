@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use \App\Models\Modelo;
+use \App\Models\Trim;
 use Illuminate\Support\Facades\Validator;
 
 class ModeloController extends Controller
@@ -21,7 +22,23 @@ class ModeloController extends Controller
             if(count(Modelo::all()) > 0)
             {
                 $modelos  = Modelo::with(['make:id,name,website'])->orderBy('name','asc')->get();
-                return \response()->json(['res'=>true,'data'=>$modelos],200);
+                $data           =   json_decode($modelos, true);
+                $array_modelo    =   array();
+
+                foreach($data as $key => $qs)
+                {
+                    if(Trim::where('modelo_id',$qs['id'])->count() == 0)
+                    {
+                        $qs['bandera_trim']      =   false;
+                    }
+                    else
+                    {
+                        $qs['bandera_trim']      =   true;
+                    }
+
+                    array_push($array_modelo,$qs);
+                }
+                return \response()->json(['res'=>true,'data'=>$array_modelo],200);
             }
             else
             {

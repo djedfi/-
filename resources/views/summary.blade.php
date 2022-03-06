@@ -109,9 +109,9 @@
                     $email              = $item->email;
                     $model_car          = $item->info_car;
                     $vin                = $item->vin;
-                    $tfinance           = '$US '.number_format($item->total_financed,2,'.',',');
-                    $balance            = '$US '.number_format($item->balance,2,'.',',');
-                    $precio             = '$US '.number_format($item->precio,2,'.',',');
+                    $tfinance           = 'US$ '.number_format($item->total_financed,2,'.',',');
+                    $balance            = 'US$ '.number_format($item->balance,2,'.',',');
+                    $precio             = 'US$ '.number_format($item->precio,2,'.',',');
                     $loan_date          = $item->loan_date;
                     $start_date         = $item->start_payment;
 
@@ -119,11 +119,16 @@
             @endforeach
         @elseif (count($loan) === 0)
             @php
-            $date_payment       = 'NO DATA';
-            $invoice_number     = 'NO DATA';
-            $full_name          = 'NO DATA';
-            $cellphone          = 'NO DATA';
-            $email              = 'NO DATA';
+                $full_name          = 'NO DATA';
+                $cellphone          = 'NO DATA';
+                $email              = 'NO DATA';
+                $model_car          = 'NO DATA';
+                $vin                = 'NO DATA';
+                $tfinance           = 'NO DATA';
+                $balance            = 'NO DATA';
+                $precio             = 'NO DATA';
+                $loan_date          = 'NO DATA';
+                $start_date         = 'NO DATA';
 
             @endphp
         @endif

@@ -55,7 +55,7 @@ class CarController extends Controller
             'txt_ndoors_car'        =>          'nullable|integer|min:1|max:10',
             'txt_price_car'         =>          'required|regex:/^\d+(\.\d{1,2})?$/',
             'slc_branch_car'        =>          'required|exists:App\Models\Branch,id',
-            'slc_style_car'         =>          'required|exists:App\Models\Style,id',
+            'slc_style_car'         =>          'nullable|exists:App\Models\Style,id',
             'slc_transmi_car'       =>          'nullable|integer|min:1|max:3',
             'slc_condicion_car'     =>          'required|integer|between:1,2',
             'slc_fueltype_car'      =>          'nullable|integer|between:1,4',
@@ -167,7 +167,7 @@ class CarController extends Controller
             'txt_ndoors_car_upd'        =>          'nullable|integer|min:1|max:10',
              'txt_price_car_upd'         =>          'required|regex:/^\d+(\.\d{1,2})?$/',
             'slc_branch_car_upd'        =>          'required|exists:App\Models\Branch,id',
-            'slc_style_car_upd'         =>          'required|exists:App\Models\Style,id',
+            'slc_style_car_upd'         =>          'nullable|exists:App\Models\Style,id',
             'slc_transmi_car_upd'       =>          'nullable|integer|min:1|max:3',
             'slc_condicion_car_upd'     =>          'required|integer|between:1,2',
             'slc_fueltype_car_upd'      =>          'nullable|integer|between:1,4',
@@ -393,7 +393,7 @@ class CarController extends Controller
                     ->join('modelos as md','md.make_id', '=', 'mk.id')
                     ->join('trims as tr', 'tr.modelo_id', '=', 'md.id')
                     ->join('cars as cr', 'cr.trim_id', '=', 'tr.id')
-                    ->join('styles as st', 'st.id', '=', 'cr.style_id')
+                    ->leftJoin('styles as st', 'st.id', '=', 'cr.style_id')
                     ->select('mk.id as id_make','md.id as id_modelo','tr.id as id_trim','cr.id as id_car','mk.name as name_make','md.name as name_modelo','tr.name as name_trim','st.name as name_style','cr.*')
                     ->where('cr.id',$id)
                     ->get();

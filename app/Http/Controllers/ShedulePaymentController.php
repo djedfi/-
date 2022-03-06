@@ -87,7 +87,7 @@ class ShedulePaymentController extends Controller
                 {
                     $contador++;
                     $qs['id'] = $contador;
-                    $date_programable      = Carbon::create($qs['date_programable'])->subDay(5);
+                    $date_programable      = Carbon::create($qs['date_programable'])->subDay(env('DIAS_GRACIAS_BEFORE'));
                     if($this->checkpayment($id,$date_programable,$qs['date_end']))
                     {
                         $qs['pago'] = 1;

@@ -19,7 +19,7 @@ class Cars extends Migration
             $table->id();
 
             $table->unsignedBigInteger('trim_id');
-            $table->unsignedBigInteger('style_id');
+            $table->unsignedBigInteger('style_id')->nullable();
             $table->unsignedBigInteger('branch_id');
             $table->string('vin',17)->unique();
             $table->string('stock_number',8)->unique();

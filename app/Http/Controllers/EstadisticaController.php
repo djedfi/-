@@ -123,7 +123,7 @@ class EstadisticaController extends Controller
             $array_id_loan =array();
             foreach($data as $key => $qs)
             {
-                $date_programable      = Carbon::create($qs['date_programable'])->subDay(5);
+                $date_programable      = Carbon::create($qs['date_programable'])->subDay(env('DIAS_GRACIAS_BEFORE'));
                 if(!$this->checkpayment($qs['loan_id'],$date_programable,$qs['date_end']))
                 {
                     $qs['color']            =   $array_color[rand(0,$total_colores)];
@@ -177,7 +177,7 @@ class EstadisticaController extends Controller
             $array_id_loan =array();
             foreach($data as $key => $qs)
             {
-                $date_programable      = Carbon::create($qs['date_programable'])->subDay(5);
+                $date_programable      = Carbon::create($qs['date_programable'])->subDay(env('DIAS_GRACIAS_BEFORE'));
                 if(!$this->checkpayment($qs['loan_id'],$date_programable,$qs['date_end']))
                 {
                     $qs['color']            =   $array_color[rand(0,$total_colores)];
