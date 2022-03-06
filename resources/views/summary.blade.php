@@ -190,8 +190,8 @@
                 <tr class="details">
 					<td style="width:50%">{{$item->description}}</td>
 					<td style="width:10%">{{$item->date_payment}}</td>
-                    <td style="width:20%; text-align:center">{{'$US '.number_format($item->monto,2,'.',',')}}</td>
-                    <td style="width:20%; text-align:center">{{'$US '.number_format($item->balance,2,'.',',')}}</td>
+                    <td style="width:20%; text-align:center">{{'US$ '.number_format($item->monto,2,'.',',')}}</td>
+                    <td style="width:20%; text-align:center">{{'US$ '.number_format($item->balance,2,'.',',')}}</td>
 				</tr>
 
                 @endforeach

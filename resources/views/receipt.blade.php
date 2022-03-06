@@ -113,8 +113,8 @@
                     $year               = $item->year;
                     $lbl_method_payment = $item->lbl_forma_pago;
                     $description        = $item->description;
-                    $monto              = '$US '.number_format($item->monto,2,'.',',');
-                    $balance              = '$US '.number_format($item->balance,2,'.',',');
+                    $monto              = 'US$ '.number_format($item->monto,2,'.',',');
+                    $balance              = 'US$ '.number_format($item->balance,2,'.',',');
                 @endphp
             @endforeach
         @elseif (count($payment) === 0)
