@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use \App\Models\Modelo;
+use \App\Models\Trim;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class ModeloController extends Controller
 {
@@ -18,9 +20,15 @@ class ModeloController extends Controller
         //
         try
         {
-            if(count(Modelo::all()) > 0)
+            $modelos  =   DB::table('makes as mk')
+                        ->join('modelos as md','md.make_id', '=', 'mk.id')
+                        ->leftJoin('trims as tr','tr.modelo_id', '=', 'md.id')
+                        ->selectRaw('md.id,md.name as name_modelo,mk.name as name_make,count(tr.modelo_id) as conteo')
+                        ->groupBy('md.id','md.name','mk.name')
+                        ->orderBy('md.name','asc')
+                        ->get();
+            if(count($modelos) > 0)
             {
-                $modelos  = Modelo::with(['make:id,name,website'])->orderBy('name','asc')->get();
                 return \response()->json(['res'=>true,'data'=>$modelos],200);
             }
             else

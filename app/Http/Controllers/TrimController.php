@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\Trim;
-
+use App\Models\Car;
 
 
 class TrimController extends Controller
@@ -24,8 +24,24 @@ class TrimController extends Controller
         {
             if(count(Trim::all()) > 0)
             {
-                $trims  = Trim::with(['modelo:id,name'])->orderBy('name','asc')->get();
-                return \response()->json(['res'=>true,'data'=>$trims],200);
+                $trims          = Trim::with(['modelo:id,name'])->orderBy('name','asc')->get();
+                $data           =   json_decode($trims, true);
+                $array_trims   =   array();
+
+                foreach($data as $key => $qs)
+                {
+                    if(Car::where('trim_id',$qs['id'])->count() == 0)
+                    {
+                        $qs['bandera_car']      =   false;
+                    }
+                    else
+                    {
+                        $qs['bandera_car']      =   true;
+                    }
+
+                    array_push($array_trims,$qs);
+                }
+                return \response()->json(['res'=>true,'data'=>$array_trims],200);
             }
             else
             {
@@ -240,7 +256,10 @@ class TrimController extends Controller
                 $trims  =   DB::table('makes as mk')
                         ->join('modelos as md','md.make_id', '=', 'mk.id')
                         ->join('trims as tr', 'tr.modelo_id', '=', 'md.id')
-                        ->select('mk.id as id_make','md.id as id_modelo','tr.id as id_trim',DB::raw('CONCAT(mk.name, \' \', md.name) as full_name'), 'tr.name as name_trim')
+                        ->leftJoin('cars as crs','tr.id','=','trim_id')
+                        ->selectRaw('mk.id as id_make,md.id as id_modelo,tr.id as id_trim, CONCAT(mk.name, " ", md.name) as full_name,tr.name as name_trim, count(crs.trim_id) as conteo')
+                        ->groupBy('mk.id','md.id','tr.id','md.name','mk.name','tr.name')
+                        ->orderBy('tr.name','asc')
                         ->get();
             }
 

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use PDF;
 
 class InvoiceController extends Controller
@@ -34,6 +36,7 @@ class InvoiceController extends Controller
 
     public function getLoanPDF($payment_id)
     {
+        $dt                 =   Carbon::now();
         $name_company       =   'AA Motors Auto';
         $address_company_p  =   '725 W Manchester Ave';
         $address_company_s  =   'Los Angeles, CA 90044';
@@ -52,7 +55,8 @@ class InvoiceController extends Controller
                         ->where('pl.concepto', '=', 3)
                         ->get();
         $pdf = PDF::loadView('receipt',compact('payment','name_company','address_company_p','address_company_s','cellphone_company'));
-        return $pdf->download('receipt.pdf');
+        $name_file = 'receipt_'.$dt->format('m_d_Y_H_i_s_u');
+        return $pdf->stream($name_file.'.pdf');
     }
 
     public function getSummaryLoan($loan_id)
@@ -86,7 +90,7 @@ class InvoiceController extends Controller
 
     public function getSummaryLoanPDF($loan_id)
     {
-
+        $dt                 =   Carbon::now();
         $name_company       =   'AA Motors Auto';
         $address_company_p  =   '725 W Manchester Ave';
         $address_company_s  =   'Los Angeles, CA 90044';
@@ -111,6 +115,8 @@ class InvoiceController extends Controller
 
         //return PDF::loadFile(public_path().'/myfile.html')->save('/path-to/my_stored_file.pdf')->stream('download.pdf');
         $pdf = PDF::loadView('summary',compact('loan','payments','name_company','address_company_p','address_company_s','cellphone_company'));
-        return $pdf->download('summary.pdf');
+        $name_file = 'receipt_'.$dt->format('m_d_Y_H_i_s_u');
+        return $pdf->stream($name_file.'.pdf');
+        return $pdf->stream('receipt.pdf');
     }
 }

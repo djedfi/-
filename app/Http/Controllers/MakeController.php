@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use \App\Models\Make;
+use \App\Models\Modelo;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class MakeController extends Controller
 {
@@ -18,18 +20,25 @@ class MakeController extends Controller
          //
          try
          {
-             if(count(Make::all()) > 0)
-             {
-                 return \response()->json(['res'=>true,'data'=>Make::orderBy('name','asc')->get()],200);
-             }
-             else
-             {
-                 return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_empty')],200);
-             }
+            $makes  =   DB::table('makes as mk')
+                        ->leftJoin('modelos as md','md.make_id', '=', 'mk.id')
+                        ->selectRaw('mk.id,mk.name,mk.website,count(md.make_id) as conteo')
+                        ->groupBy('mk.id','mk.name','mk.website')
+                        ->orderBy('mk.name','asc')
+                        ->get();
+
+            if(count($makes) > 0)
+            {
+            return \response()->json(['res'=>true,'data'=>$makes],200);
+            }
+            else
+            {
+                return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_empty')],200);
+            }
          }
-         catch(\Exception $e)
+         catch(\Illuminate\Database\QueryException $ex)
          {
-             return \response()->json(['res'=>false,'data'=>[],'message'=>config('constants.msg_error_srv')],200);
+             return \response()->json(['res'=>false,'data'=>[],'message'=>$ex->getMessage()],200);
          }
 
     }
@@ -183,7 +192,7 @@ class MakeController extends Controller
             }
             else
             {
-                return \response()->json(['res'=>true,'message'=>config('constants.msg_error_existe_srv')],200);
+                return \response()->json(['res'=>false,'message'=>config('constants.msg_error_existe_srv')],200);
             }
         }
         catch(\Exception $e)
