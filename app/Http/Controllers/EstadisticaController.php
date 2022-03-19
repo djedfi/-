@@ -261,28 +261,41 @@ class EstadisticaController extends Controller
         {
             $today              =   CarbonImmutable::now()->format('Y-m-d');
 
-            $report = DB::table('loans as lc')
-                        ->join('schedule_payments as sp','sp.loan_id', '=', 'lc.id')
-                        ->join('customers as ct','lc.customer_id', '=', 'ct.id')
-                        ->join('cars as cr','lc.car_id', '=', 'cr.id')
-                        ->join('trims as tr','cr.trim_id', '=', 'tr.id')
-                        ->join('modelos as ml','tr.modelo_id', '=', 'ml.id')
-                        ->join('makes as mk','ml.make_id', '=', 'mk.id')
-                        ->select('sp.id as schedule_id','lc.id as loan_id','lc.customer_id','lc.car_id','ct.email','cr.vin','cr.stock_number','lc.minimun_payment','lc.pago_automatico','sp.date_programable','sp.date_end')
-                        ->selectRaw("concat(ct.last_name,', ',ct.first_name) as customer_name")
-                        ->selectRaw("concat(mk.name,' ',ml.name,' ',tr.name) as car_info")
-                        ->where('sp.date_end','<=',$today)
-                        ->where('lc.balance','>',0)
-                        ->whereNotIn('lc.id', function($query)
-                        {
-                                $query->select('loan_id')
-                                ->from('payments_loan')
-                                ->where('concepto',3)
-                                ->where('estado',1)
-                                ->where('date_doit','>=','(date_add(sp.date_programable,interval '.env('DIAS_GRACIAS_BEFORE').' day))');
-                        })->get();
+            // $report = DB::table('loans as lc')
+            //             ->join('schedule_payments as sp','sp.loan_id', '=', 'lc.id')
+            //             ->join('customers as ct','lc.customer_id', '=', 'ct.id')
+            //             ->join('cars as cr','lc.car_id', '=', 'cr.id')
+            //             ->join('trims as tr','cr.trim_id', '=', 'tr.id')
+            //             ->join('modelos as ml','tr.modelo_id', '=', 'ml.id')
+            //             ->join('makes as mk','ml.make_id', '=', 'mk.id')
+            //             ->select('sp.id as schedule_id','lc.id as loan_id','lc.customer_id','lc.car_id','ct.email','cr.vin','cr.stock_number','lc.minimun_payment','lc.pago_automatico','sp.date_programable','sp.date_end')
+            //             ->selectRaw("concat(ct.last_name,', ',ct.first_name) as customer_name")
+            //             ->selectRaw("concat(mk.name,' ',ml.name,' ',tr.name) as car_info")
+            //             ->where('sp.date_end','<=',$today)
+            //             ->where('lc.balance','>',0)
+            //             ->whereNotIn('lc.id', function($query)
+            //             {
+            //                     $query->select('loan_id')
+            //                     ->from('payments_loan')
+            //                     ->where('concepto',3)
+            //                     ->where('estado',1)
+            //                     ->where('date_doit','>=','(date_add(sp.date_programable,interval '.env('DIAS_GRACIAS_BEFORE').' day))');
+            //             })->get();
+            $report  = DB::select("select sp.id as schedule_id,lc.id,lc.customer_id,lc.car_id,
+            concat(ct.last_name,', ',ct.first_name) as customer_name,
+            concat(mk.name,' ',ml.name,' ',tr.name) as car_info,
+            ct.email,cr.vin,cr.stock_number,lc.minimun_payment,lc.pago_automatico,
+            sp.date_programable,sp.date_end
+            from loans as lc
+            inner join schedule_payments as sp on sp.loan_id = lc.id
+            inner join customers as ct on ct.id = lc.customer_id
+            inner join cars as cr on cr.id = lc.car_id
+            inner join trims as tr on tr.id = cr.trim_id
+            inner join modelos as ml on ml.id = tr.modelo_id
+            inner join makes as mk on mk.id = ml.make_id
+            where sp.date_end <=? and lc.balance > ? and lc.id not in (select loan_id from payments_loan where concepto = ? and estado = ? and date_doit >=(date_add(sp.date_programable,interval -10 day)))",[$today,0,3,1]);
 
-            if($report->count())
+            if(count($report) > 0)
             {
                 return \response()->json(['res'=>true,'data'=>$report],200);
             }
