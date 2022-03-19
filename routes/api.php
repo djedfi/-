@@ -79,6 +79,7 @@ Route::group(['middleware'=>['auth:sanctum']],function()
 
     Route::resource("loans", LoanController::class);
     Route::get("getReporteLoan/{id}",[App\Http\Controllers\LoanController::class,'getReporteLoan']);
+    Route::get("getSchedule",[App\Http\Controllers\LoanController::class,'getSchedule']);
 
     Route::resource("payments", PaymentLoanController::class);
     Route::get("getLastPaymentbyLoad/{id}",[App\Http\Controllers\PaymentLoanController::class,'getLastPaymentbyLoad']);
@@ -94,9 +95,7 @@ Route::group(['middleware'=>['auth:sanctum']],function()
     Route::get("getCardPaymentToday",[EstadisticaController::class,'getPaymentToday']);
     Route::get("getPaymentDue",[EstadisticaController::class,'getPaymentDue']);
     Route::get("getFPagoEstadistica",[EstadisticaController::class,'getFPagoEstadistica']);
-
-
-
+    Route::get("getListPendingPayment",[EstadisticaController::class,'getListPendingPayment']);
 });
 
 
@@ -104,3 +103,4 @@ Route::group(['middleware'=>['auth:sanctum']],function()
 Route::post("login",[App\Http\Controllers\AuthController::class,'login']);
 Route::post("reset_password",[App\Http\Controllers\AuthController::class,'reset_password']);
 Route::post("save_password",[App\Http\Controllers\AuthController::class,'save_password']);
+Route::get("getSchedule/{id}",[App\Http\Controllers\LoanController::class,'getSchedule']);

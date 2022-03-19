@@ -178,7 +178,7 @@ class LoanController extends Controller
                     PaymentLoan::insert($data_payment_multi);
 
                     //registrar los pagos en el futuro.
-                    $numeros_pagos  =   $inputs['txt_long_term_loan'];
+                    $numeros_pagos  =   $inputs['txt_long_term_loan'] + 24;
 
 
                     for($i=1;$i<=$numeros_pagos;$i++)
@@ -522,6 +522,50 @@ class LoanController extends Controller
         {
             return \response()->json(['res'=>false,'message'=>$e,'data'=>[]],200);
         }
+    }
+
+    public function getSchedule($id)
+    {
+        $numeros_pagos = $id;
+
+        list($m_spay,$d_spay,$Y_spay)      =   explode('/','06/03/2019');
+        $array_datos        = [];
+        $array_datos_final  = [];
+        $numeros_pagos = $numeros_pagos + 24;
+
+        for($i=1;$i<=$numeros_pagos;$i++)
+        {
+            if($i == 1)
+            {
+                $date_probramable       =   $Y_spay.'-'.$m_spay.'-'.$d_spay;
+                unset($dt);
+                $dt                     =    Carbon::create($Y_spay, $m_spay, $d_spay, 0);
+                $date_ultimo            =    $dt->addDays(10);
+                $array_datos            =   array('date_programable'=>$date_probramable,'date_ultimo'=>$date_ultimo);
+                array_push($array_datos_final,$array_datos);
+
+            }
+            else
+            {
+                unset($dts);
+                $dts                                    =    CarbonImmutable::create($Y_spay, $m_spay, $d_spay, 0);
+                $dts->settings([
+                    'monthOverflow' => false,
+                ]);
+                $date_probramable       =   $dts->add(($i-1),'month');
+
+                $fecha_programable      =   explode(' ',$date_probramable);
+
+                list($Y_dp,$m_dp,$d_dp)      =   explode('-',$fecha_programable[0]);
+                $dt3                     =    Carbon::create($Y_dp, $m_dp, $d_dp, 0);
+                $date_ultimo             =    $dt3->addDays(10);
+                $array_datos            =   array('date_programable'=>$date_probramable,'date_ultimo'=>$date_ultimo);
+                array_push($array_datos_final,$array_datos);
+            }
+        }
+
+        return \response()->json($array_datos_final,200);
+
     }
 
 
